@@ -281,5 +281,5 @@ function AddMovimiento({after_save}){
     );
 }
 
-
+ 
 export {AddMovimiento}
