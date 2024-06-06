@@ -129,12 +129,12 @@ export default function main({server_props}){
                 <div className="button btn-add sm-circle-btn btn-smsd" onClick={(e)=>{show_form_movimientos[1](true)}}> <i className="material-icons-outlined">add</i></div>
                 <div id="grafica_resumen" className="grafica_resumen" ></div>
             </GCard>
-            {resumen[0].map(e=>{
+            {resumen[0].map((e,index_a)=>{
               let contraste = getContrast(e.color, '#FFFFFF');
               let new_style = {background: e.color};
               if(contraste>4) new_style.color = "#FFFFFF";
               return (
-                <div className="resumen_tag" style={new_style} >
+                <div className="resumen_tag" style={new_style} key={index_a}>
                     <div className="head_resumen_tag">
                       <i className="material-icons-outlined">{e.icon}</i>
                       <label className="title">{e.title}</label>

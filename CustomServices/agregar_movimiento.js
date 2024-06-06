@@ -30,6 +30,7 @@ function AddMovimiento({after_save}){
     let today = now.getFullYear()+"-"+(month)+"-"+(day) ;
     let mov_value = useState({description:'',amount:'', account:'', tag:'', fecha:today});
     let show_avanzadas = useState(false);
+    let show_first_account = useState(true);
 
     useEffect(()=>{
         get_account_scheme();
@@ -41,6 +42,7 @@ function AddMovimiento({after_save}){
     },[]);
     async function get_accounts(){
         const data = await communication({url:`/api/FinanceGuru/Services/user_accounts`});
+        if(data.length==0) show_form_account[1](true);
         accounts[1](data);
     }
     async function get_sub_tags(){
@@ -182,76 +184,94 @@ function AddMovimiento({after_save}){
     }
     return (
         <>
+        {
         
-        <GCard className="movimientos-container">
-            <div className="buttons_container">
-                    <button className="add_account button btn-add" onClick={()=>{show_form_account[1](true);}}>Agregar Cuenta</button>
-                    <button className="add_tag button button btn-add" onClick={()=>{show_form_tag[1](true);}}>Agregar Clasificacion</button>
-                    <button className="add_sub_tag button button btn-add" onClick={()=>{show_form_sub_tag[1](true);}}>Agregar Sub Clasificacion</button>
-            </div>
-            <div className="accounts_container">
-                <div className="accounts_container_title">
-                    Pagará con: 
+            <GCard className="movimientos-container">
+                <div className="buttons_container">
+                        <button className="add_account button btn-add" onClick={()=>{show_form_account[1](true);}}>Agregar Cuenta</button>
+                        <button className="add_tag button button btn-add" onClick={()=>{show_form_tag[1](true);}}>Agregar Clasificacion</button>
+                        <button className="add_sub_tag button button btn-add" onClick={()=>{show_form_sub_tag[1](true);}}>Agregar Sub Clasificacion</button>
                 </div>
-                <div className="accounts_container_options">
-                    {accounts[0] && accounts[0].map((e)=>(
-                        <div className="account_container" id={e.id} onClick={()=>{select_account(e.id)}} >
-                            <div className="account_title">{e.title}</div>
-                            <div className="account_icon"><i className="material-icons-outlined" style={{color: e.color}} >{e.icon}</i></div>
-                            <div className="account_balance">Q. {cast_money({amount: e.balance})}</div>
-                        </div>    
-                    ))}
+                <div className="accounts_container">
+                    <div className="accounts_container_title">
+                        Pagará con: 
+                    </div>
+                    <div className="accounts_container_options">
+                        {accounts[0] && accounts[0].map((e)=>(
+                            <div className="account_container" id={e.id} onClick={()=>{select_account(e.id)}} >
+                                <div className="account_title">{e.title}</div>
+                                <div className="account_icon"><i className="material-icons-outlined" style={{color: e.color}} >{e.icon}</i></div>
+                                <div className="account_balance">Q. {cast_money({amount: e.balance})}</div>
+                            </div>    
+                        ))}
+                    </div>
+                    
                 </div>
-                
-            </div>
-            <div className="monto_container GForm">
-                <div className="gform-line">
-                    <textarea type="text" id="description" value={mov_value[0].description} onChange={(e)=>{onChange('description', e.target.value)}}/>
-                    <label htmlFor="description" className="field-description">Descripcion</label>
+                <div className="monto_container GForm">
+                    <div className="gform-line">
+                        <textarea type="text" id="description" value={mov_value[0].description} onChange={(e)=>{onChange('description', e.target.value)}}/>
+                        <label htmlFor="description" className="field-description">Descripcion</label>
+                    </div>
+                    <div className="gform-line">
+                        <input type="number" id="amount" value={mov_value[0].amount} onChange={(e)=>{onChange('amount', e.target.value)}}/>
+                        <label htmlFor="amount" className="field-description">Monto</label>
+                    </div>
+                    <div className="gform-line">
+                        <input type="date" id="fecha" value={mov_value[0].fecha} onChange={(e)=>{onChange('fecha', e.target.value)}}/> 
+                    </div>
+                    <button className="send button" onClick={save_movimiento}>Guardar</button>
                 </div>
-                <div className="gform-line">
-                    <input type="number" id="amount" value={mov_value[0].amount} onChange={(e)=>{onChange('amount', e.target.value)}}/>
-                    <label htmlFor="amount" className="field-description">Monto</label>
-                </div>
-                <div className="gform-line">
-                    <input type="date" id="fecha" value={mov_value[0].fecha} onChange={(e)=>{onChange('fecha', e.target.value)}}/> 
-                </div>
-                <button className="send button" onClick={save_movimiento}>Guardar</button>
-            </div>
-            <h2>Seleccionar la clasificacion</h2>
-            <div className="tags_container">
-                {tags[0] && tags[0].map((e)=>{
-                    let contraste = getContrast(e.color, '#FFFFFF');
-                    let new_style = {background: e.color};
-                    if(contraste>4) new_style.color = "#FFFFFF";
-                    return (
-                    <div className="tag_container" style={new_style} id={e.id} onClick={()=>{select_tag(e.id)}} >
-                        <div className="tag_icon"><i  className="material-icons-outlined">{e.icon}</i></div>
-                        <div className="tag_title">{e.title}</div>
-                    </div>    
-                )})}
-            </div>
-            <div className="btn_avanzadas" onClick={()=>{show_avanzadas[1](!show_avanzadas[0]);}}><i className="material-icons">{show_avanzadas[0]?"keyboard_arrow_up":"keyboard_arrow_down"}</i></div>
-            {show_avanzadas[0] && 
-                <div className="sub_tags_container">
-                    {sub_tags[0] && sub_tags[0].map((e)=>(
-                        <div className="sub_tag_container" id={e.id} onClick={()=>{select_sub_tag(e.id)}} >
-                            <div className="tag_icon"><i style={{color: e.color}} className="material-icons">{e.icon}</i></div>
+                <h2>Seleccionar la clasificacion</h2>
+                <div className="tags_container">
+                    {tags[0] && tags[0].map((e)=>{
+                        let contraste = getContrast(e.color, '#FFFFFF');
+                        let new_style = {background: e.color};
+                        if(contraste>4) new_style.color = "#FFFFFF";
+                        return (
+                        <div className="tag_container" style={new_style} id={e.id} onClick={()=>{select_tag(e.id)}} >
+                            <div className="tag_icon"><i  className="material-icons-outlined">{e.icon}</i></div>
                             <div className="tag_title">{e.title}</div>
                         </div>    
-                    ))}
+                    )})}
                 </div>
-            }
-            
-        </GCard>
+                <div className="btn_avanzadas" onClick={()=>{show_avanzadas[1](!show_avanzadas[0]);}}><i className="material-icons">{show_avanzadas[0]?"keyboard_arrow_up":"keyboard_arrow_down"}</i></div>
+                {show_avanzadas[0] && 
+                    <div className="sub_tags_container">
+                        {sub_tags[0] && sub_tags[0].map((e)=>(
+                            <div className="sub_tag_container" id={e.id} onClick={()=>{select_sub_tag(e.id)}} >
+                                <div className="tag_icon"><i style={{color: e.color}} className="material-icons">{e.icon}</i></div>
+                                <div className="tag_title">{e.title}</div>
+                            </div>    
+                        ))}
+                    </div>
+                }
+                
+            </GCard>
+        }
         {show_form_account[0] &&
             <GModal show={show_form_account} title={`Agregar Cuenta`}>
+                {
+                    accounts[0].length==0 &&         
+                    <h3>
+                        Bienvenido a Finance Guru, para iniciar debes de crear tu primera cuenta
+                    </h3>
+                }
                 <GForm 
                     scheme={account_scheme[0]} 
                     values={account_values}
                     onSubmit={save_new_account} 
                     action={'insert'}
-                    primary_action={'insert'}/>
+                    primary_action={'insert'}>
+                    
+                    <div className="preview_container">
+
+                        <div className="preview">
+                            <div className="account_title">{account_values[0].title}</div>
+                            <div className="account_icon"><i className="material-icons-outlined" style={{color: account_values[0].color}} >{account_values[0].icon}</i></div>
+                            <div className="account_balance">Q. {cast_money({amount: account_values[0].balance?account_values[0].balance:0})}</div>    
+                        </div>
+                    </div>
+                </GForm>
                 
             </GModal>
         }
