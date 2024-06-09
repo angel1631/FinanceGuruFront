@@ -6,6 +6,7 @@ import { GForm } from "../../Core/components/GForm.js";
 import { validate_form } from "../../Core/scripts/form.js";
 import { cast_money } from "../../Core/scripts/casts.js";
 import { getContrast } from "../../Core/scripts/color.js";
+import { GMoney } from "../../Core/components/GMoney.js";
 
 
 
@@ -186,7 +187,7 @@ function AddMovimiento({after_save}){
         <>
         {
         
-            <GCard className="movimientos-container">
+            <GCard className="movimientos_container">
                 <div className="buttons_container">
                         <button className="add_account button btn-add" onClick={()=>{show_form_account[1](true);}}>Agregar Cuenta</button>
                         <button className="add_tag button button btn-add" onClick={()=>{show_form_tag[1](true);}}>Agregar Clasificacion</button>
@@ -213,13 +214,14 @@ function AddMovimiento({after_save}){
                         <label htmlFor="description" className="field-description">Descripcion</label>
                     </div>
                     <div className="gform-line">
-                        <input type="number" id="amount" value={mov_value[0].amount} onChange={(e)=>{onChange('amount', e.target.value)}}/>
+                        <GMoney id="amount" value={mov_value[0].amount} field={{id:"amount", description:'Monto'}} onChange={onChange} />
+                        
                         <label htmlFor="amount" className="field-description">Monto</label>
                     </div>
                     <div className="gform-line">
                         <input type="date" id="fecha" value={mov_value[0].fecha} onChange={(e)=>{onChange('fecha', e.target.value)}}/> 
                     </div>
-                    <button className="send button" onClick={save_movimiento}>Guardar</button>
+                    
                 </div>
                 <h2>Seleccionar la clasificacion</h2>
                 <div className="tags_container">
@@ -234,6 +236,7 @@ function AddMovimiento({after_save}){
                         </div>    
                     )})}
                 </div>
+                <button className="send button save_move" onClick={save_movimiento}>Guardar</button>
                 <div className="btn_avanzadas" onClick={()=>{show_avanzadas[1](!show_avanzadas[0]);}}><i className="material-icons">{show_avanzadas[0]?"keyboard_arrow_up":"keyboard_arrow_down"}</i></div>
                 {show_avanzadas[0] && 
                     <div className="sub_tags_container">
