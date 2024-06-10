@@ -6,6 +6,8 @@ import { GModal } from "../../Core/components/GModal";
 import { AddMovimiento } from "./agregar_movimiento";
 import { cast_money } from "../../Core/scripts/casts";
 import { getContrast } from "../../Core/scripts/color";
+import { useRouter } from 'next/router';
+
 
 export async function server_props(context){
     try{
@@ -22,11 +24,13 @@ export async function server_props(context){
         return {resumen: resumen_clasificacion};
     }catch(error){
         console.log("Error SSR: ",error);
-        return { props: { } }
+        return { error  }
     }
 }
 export default function main({server_props}){
-  
+    const router = useRouter();
+    console.log("------server props, main", server_props);
+    if(server_props.error?.http_code ==401) router.push("/login");
     let resumen = useState(server_props.resumen?server_props.resumen.map(r=>({...r,movimientos:[]})):[]);
     let data = useState()
     let show_form_movimientos = useState(false);
