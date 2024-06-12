@@ -8,6 +8,8 @@
     flex-direction: column;
     width: 100%;
     margin-top: 2rem;
+   
+    overflow: hidden;
 }
 .accounts_container_title{
     color: var(--primary-color);
@@ -18,13 +20,19 @@
     width: 100%;
     justify-content: space-around;
     margin-top: 1rem;
+    padding: 1rem;
+    overflow-y: hidden;
+    overflow-x: scroll;
+    gap: 1rem;
+    box-sizing: border-box;
+
 }
 .account_container, .tag_container{
     cursor: pointer;
 }
 .account_container{
     
-    width: 30%;
+    min-width: 150px;
     text-align: center;
     padding-top: 0.5rem;
     padding-bottom: 1rem;
