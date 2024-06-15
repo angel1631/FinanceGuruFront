@@ -133,7 +133,7 @@ function AddMovimiento({after_save}){
             if(!movimiento.classification) movimiento.classification = classifications[0][0].id; 
             let url = '/api/FinanceGuru/Services/save_movimiento';
             let respuesta_json = await communication({url, data: movimiento});
-            alert(respuesta_json.msj);
+            alert(respuesta_json.message);
             after_save();
         }catch(err){
             console.log("---error al guardar",err);
