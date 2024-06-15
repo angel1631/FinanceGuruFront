@@ -77,7 +77,7 @@
     padding: 1rem;
     
 }
-.sub_tags_container{
+.classifications_container{
     display: grid;
     margin-top: 1rem;
     grid-template-columns: 1fr 1fr;
@@ -93,7 +93,7 @@
     display: flex;
     color: var(--primary-color);
 }
-.sub_tag_container{
+.classification_container{
     box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.5);
     text-align: center;
     padding: 0.7rem;

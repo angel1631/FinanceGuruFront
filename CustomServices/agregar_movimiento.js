@@ -14,16 +14,16 @@ function AddMovimiento({after_save}){
     let values = useState({});
     let show_form_account = useState(false);
     let show_form_tag = useState(false);
-    let show_form_sub_tag = useState(false);
+    let show_form_classification = useState(false);
     let account_scheme = useState({});
     let tag_scheme = useState({});
     let tag_values = useState({});
-    let sub_tag_scheme = useState({});
-    let sub_tag_values = useState({});
+    let classification_scheme = useState({});
+    let classification_values = useState({});
     let account_values = useState({});
     let accounts = useState([]);
     let tags = useState([]);
-    let sub_tags = useState([]);
+    let classifications = useState([]);
     let now = new Date();
     let day = ("0" + now.getDate()).slice(-2);
     let month = ("0" + (now.getMonth() + 1)).slice(-2);
@@ -36,9 +36,9 @@ function AddMovimiento({after_save}){
     useEffect(()=>{
         get_account_scheme();
         get_tag_scheme();
-        get_sub_tag_scheme();
+        get_classification_scheme();
         get_accounts();
-        get_sub_tags();
+        get_classifications();
         get_tags();
     },[]);
     async function get_accounts(){
@@ -46,9 +46,9 @@ function AddMovimiento({after_save}){
         if(data.length==0) show_form_account[1](true);
         accounts[1](data);
     }
-    async function get_sub_tags(){
-        const data = await communication({url:`/api/FinanceGuru/Services/user_sub_tags`});
-        sub_tags[1](data);
+    async function get_classifications(){
+        const data = await communication({url:`/api/FinanceGuru/Services/user_classifications`});
+        classifications[1](data);
     }
     async function get_tags(){
         const data = await communication({url:`/api/FinanceGuru/Services/user_tags?expense=si`});
@@ -72,11 +72,11 @@ function AddMovimiento({after_save}){
             console.log("Error en api", error);
         }
     }
-    async function get_sub_tag_scheme(){
+    async function get_classification_scheme(){
         try{
-            let scheme_json = await communication({url:`/api/FinanceGuru/FGSubTag/scheme`});
+            let scheme_json = await communication({url:`/api/FinanceGuru/FGClassification/scheme`});
             console.log("----scheme_json", scheme_json);
-            sub_tag_scheme[1](scheme_json)
+            classification_scheme[1](scheme_json)
         }catch(error){
             console.log("Error en api", error);
         }
@@ -91,7 +91,7 @@ function AddMovimiento({after_save}){
             show_form_account[1](false);
             alert("Todo Ok");
         }catch(err){
-            alert(err);
+            console.log(err); alert(err.error_message);
         }
         
     }
@@ -106,20 +106,20 @@ function AddMovimiento({after_save}){
             alert("Todo Ok");
             
         }catch(err){
-            alert(err);
+            console.log(err); alert(err.error_message);
         } 
     }
-    async function save_new_sub_tag(){
+    async function save_new_classification(){
         try{
-            await validate_form(sub_tag_values[0], sub_tag_scheme[0].fields);
-            let url = '/api/FinanceGuru/FGSubTag/insert';
-            let respuesta_json = await communication({url, data: sub_tag_values[0]});
-            sub_tags[1]([...sub_tags[0],{...sub_tag_values[0],id: respuesta_json.id}]);
-            show_form_sub_tag[1](false);
+            await validate_form(classification_values[0], classification_scheme[0].fields);
+            let url = '/api/FinanceGuru/FGClassification/insert';
+            let respuesta_json = await communication({url, data: classification_values[0]});
+            classifications[1]([...classifications[0],{...classification_values[0],id: respuesta_json.id}]);
+            show_form_classification[1](false);
             alert("Todo Ok");
             
         }catch(err){
-            alert(err);
+            console.log(err); alert(err.error_message);
         } 
     }
     async function save_movimiento(){
@@ -130,18 +130,14 @@ function AddMovimiento({after_save}){
             if(mov_value[0].account=='') throw 'Se debe seleccionar una cuenta';
             if(mov_value[0].tag=='') throw 'Se debe seleccionar una clasificacion';
             let movimiento = {...mov_value[0], is_debit:'si'};
-            if(!movimiento.sub_tag) movimiento.sub_tag = sub_tags[0][0].id; 
+            if(!movimiento.classification) movimiento.classification = classifications[0][0].id; 
             let url = '/api/FinanceGuru/Services/save_movimiento';
             let respuesta_json = await communication({url, data: movimiento});
-            let new_accounts = accounts[0].map((e)=>{
-                if(e.id==mov_value[0].account) e.balance = e.balance - mov_value[0].amount;
-                return e;
-            });
-            accounts[1](new_accounts);
             alert(respuesta_json.msj);
             after_save();
         }catch(err){
-            alert(err);
+            console.log("---error al guardar",err);
+            alert(err.error_message);
         }
         
         
@@ -169,15 +165,15 @@ function AddMovimiento({after_save}){
         }
     }
 
-    async function select_sub_tag(id){
-        if(mov_value[0].sub_tag!=id){
-            let sub_tag_active = document.getElementsByClassName('sub_tag_container active');
-            if(sub_tag_active.length>0){sub_tag_active[0].classList.remove('active')};
+    async function select_classification(id){
+        if(mov_value[0].classification!=id){
+            let classification_active = document.getElementsByClassName('classification_container active');
+            if(classification_active.length>0){classification_active[0].classList.remove('active')};
             document.getElementById(id).classList.add('active');
-            mov_value[1](prev_value=>({...prev_value, sub_tag: id}));
+            mov_value[1](prev_value=>({...prev_value, classification: id}));
         }else{
             document.getElementById(id).classList.remove('active');
-            mov_value[1](prev_value=>({...prev_value, sub_tag: ''}));
+            mov_value[1](prev_value=>({...prev_value, classification: ''}));
         }
     }
     function onChange(id,value){
@@ -190,8 +186,8 @@ function AddMovimiento({after_save}){
             <GCard className="movimientos_container">
                 <div className="buttons_container">
                         <button className="add_account button btn-add" onClick={()=>{show_form_account[1](true);}}>Agregar Cuenta</button>
-                        <button className="add_tag button button btn-add" onClick={()=>{show_form_tag[1](true);}}>Agregar Clasificacion</button>
-                        <button className="add_sub_tag button button btn-add" onClick={()=>{show_form_sub_tag[1](true);}}>Agregar Sub Clasificacion</button>
+                        <button className="add_tag button button btn-add" onClick={()=>{show_form_tag[1](true);}}>Agregar Tipo de Gasto</button>
+                        <button className="add_classification button button btn-add" onClick={()=>{show_form_classification[1](true);}}>Agregar Clasificacion</button>
                 </div>
                 <div className="accounts_container">
                     <div className="accounts_container_title">
@@ -202,7 +198,6 @@ function AddMovimiento({after_save}){
                             <div className="account_container" id={e.id} onClick={()=>{select_account(e.id)}} >
                                 <div className="account_title">{e.title}</div>
                                 <div className="account_icon"><i className="material-icons-outlined" style={{color: e.color}} >{e.icon}</i></div>
-                                <div className="account_balance">Q. {cast_money({amount: e.balance})}</div>
                             </div>    
                         ))}
                     </div>
@@ -239,9 +234,9 @@ function AddMovimiento({after_save}){
                 <button className="send button save_move" onClick={save_movimiento}>Guardar</button>
                 <div className="btn_avanzadas" onClick={()=>{show_avanzadas[1](!show_avanzadas[0]);}}><i className="material-icons">{show_avanzadas[0]?"keyboard_arrow_up":"keyboard_arrow_down"}</i></div>
                 {show_avanzadas[0] && 
-                    <div className="sub_tags_container">
-                        {sub_tags[0] && sub_tags[0].map((e)=>(
-                            <div className="sub_tag_container" id={e.id} onClick={()=>{select_sub_tag(e.id)}} >
+                    <div className="classifications_container">
+                        {classifications[0] && classifications[0].map((e)=>(
+                            <div className="classification_container" id={e.id} onClick={()=>{select_classification(e.id)}} >
                                 <div className="tag_icon"><i style={{color: e.color}} className="material-icons">{e.icon}</i></div>
                                 <div className="tag_title">{e.title}</div>
                             </div>    
@@ -270,8 +265,7 @@ function AddMovimiento({after_save}){
 
                         <div className="preview">
                             <div className="account_title">{account_values[0].title}</div>
-                            <div className="account_icon"><i className="material-icons-outlined" style={{color: account_values[0].color}} >{account_values[0].icon}</i></div>
-                            <div className="account_balance">Q. {cast_money({amount: account_values[0].balance?account_values[0].balance:0})}</div>    
+                            <div className="account_icon"><i className="material-icons-outlined" style={{color: account_values[0].color}} >{account_values[0].icon}</i></div>   
                         </div>
                     </div>
                 </GForm>
@@ -279,7 +273,7 @@ function AddMovimiento({after_save}){
             </GModal>
         }
         {show_form_tag[0] &&
-            <GModal show={show_form_tag} title={`Agregar Clasificacion`}>
+            <GModal show={show_form_tag} title={`Agregar Gasto`}>
                 <GForm 
                     scheme={tag_scheme[0]} 
                     values={tag_values}
@@ -289,12 +283,12 @@ function AddMovimiento({after_save}){
                 
             </GModal>
         }
-        {show_form_sub_tag[0] &&
-            <GModal show={show_form_sub_tag} title={`Agregar Clasificacion`}>
+        {show_form_classification[0] &&
+            <GModal show={show_form_classification} title={`Agregar Clasificacion`}>
                 <GForm 
-                    scheme={sub_tag_scheme[0]} 
-                    values={sub_tag_values}
-                    onSubmit={save_new_sub_tag} 
+                    scheme={classification_scheme[0]} 
+                    values={classification_values}
+                    onSubmit={save_new_classification} 
                     action={'insert'}
                     primary_action={'insert'}/>
                 
