@@ -186,14 +186,32 @@ function AddMovimiento({after_save}){
         {
         
             <GCard className="movimientos_container">
-                <div className="buttons_container">
-                        <button className="add_account button btn-add" onClick={()=>{show_form_account[1](true);}}>Agregar Cuenta</button>
-                        <button className="add_tag button button btn-add" onClick={()=>{show_form_tag[1](true);}}>Agregar Tipo de Gasto</button>
-                        <button className="add_classification button button btn-add" onClick={()=>{show_form_classification[1](true);}}>Agregar Clasificacion</button>
-                </div>
-                <div className="accounts_container">
+               
+                <div className="accounts_container move_container">
                     <div className="accounts_container_title">
-                        Pagará con: 
+                        <div>Cual es el centro de costos? </div>
+                        <div className="add_account button btn-sm bg-add sm-circle-btn" onClick={()=>{show_form_classification[1](true);}}>
+                            +
+                            <div className="tooltip bg-add">Crear centro de costos</div>
+                        </div>
+                    </div>
+                    <div className="classifications_container_options">
+                        {classifications[0] && classifications[0].map((e)=>(
+                            <div className="classification_container" id={e.id} onClick={()=>{select_classification(e.id)}} >
+                                <div className="tag_icon"><i style={{color: e.color}} className="material-icons">{e.icon}</i></div>
+                                <div className="tag_title">{e.title}</div>
+                            </div>    
+                        ))}
+                    </div>
+                    
+                </div>
+                <div className="accounts_container move_container">
+                    <div className="accounts_container_title">
+                        <div>Con que cuenta se pagará? </div>
+                        <div className="add_account button btn-sm bg-add sm-circle-btn" onClick={()=>{show_form_account[1](true);}}>
+                            +
+                            <div className="tooltip bg-add">Crear cuenta</div>
+                        </div>
                     </div>
                     <div className="accounts_container_options">
                         {accounts[0] && accounts[0].map((e)=>(
@@ -220,42 +238,34 @@ function AddMovimiento({after_save}){
                     </div>
                     
                 </div>
-                <h2>Seleccionar la clasificacion</h2>
-                <div className="tags_container">
-                    {tags[0] && tags[0].map((e)=>{
-                        let contraste = getContrast(e.color, '#FFFFFF');
-                        let new_style = {background: e.color};
-                        if(contraste>4) new_style.color = "#FFFFFF";
-                        return (
-                        <div className="tag_container" style={new_style} id={e.id} onClick={()=>{select_tag(e.id)}} >
-                            <div className="tag_icon"><i  className="material-icons-outlined">{e.icon}</i></div>
-                            <div className="tag_title">{e.title}</div>
-                        </div>    
-                    )})}
-                </div>
-                <button className="send button save_move" onClick={save_movimiento}>Guardar</button>
-                <div className="btn_avanzadas" onClick={()=>{show_avanzadas[1](!show_avanzadas[0]);}}><i className="material-icons">{show_avanzadas[0]?"keyboard_arrow_up":"keyboard_arrow_down"}</i></div>
-                {show_avanzadas[0] && 
-                    <div className="classifications_container">
-                        {classifications[0] && classifications[0].map((e)=>(
-                            <div className="classification_container" id={e.id} onClick={()=>{select_classification(e.id)}} >
-                                <div className="tag_icon"><i style={{color: e.color}} className="material-icons">{e.icon}</i></div>
+                
+                <div className="tags_container  move_container">
+                    <div className="accounts_container_title">
+                        <div>Que tipo de gasto es? </div>
+                        <div className="add_account button btn-sm bg-add sm-circle-btn" onClick={()=>{show_form_tag[1](true);}}>
+                            +
+                            <div className="tooltip bg-add">Crear Tipo de Gasto</div>
+                        </div>
+                    </div>
+                    <div className="tags_container_options">
+                        {tags[0] && tags[0].map((e)=>{
+                            let contraste = getContrast(e.color, '#FFFFFF');
+                            let new_style = {background: e.color};
+                            if(contraste>4) new_style.color = "#FFFFFF";
+                            return (
+                            <div className="tag_container" style={new_style} id={e.id} onClick={()=>{select_tag(e.id)}} >
+                                <div className="tag_icon"><i  className="material-icons-outlined">{e.icon}</i></div>
                                 <div className="tag_title">{e.title}</div>
                             </div>    
-                        ))}
+                        )})}
                     </div>
-                }
+                </div>
+                <button className="send button save_move" onClick={save_movimiento}>Guardar</button>
                 
             </GCard>
         }
         {show_form_account[0] &&
             <GModal show={show_form_account} title={`Agregar Cuenta`}>
-                {
-                    accounts[0].length==0 &&         
-                    <h3>
-                        Bienvenido a Finance Guru, para iniciar debes de crear tu primera cuenta
-                    </h3>
-                }
                 <GForm 
                     scheme={account_scheme[0]} 
                     values={account_values}
@@ -275,7 +285,7 @@ function AddMovimiento({after_save}){
             </GModal>
         }
         {show_form_tag[0] &&
-            <GModal show={show_form_tag} title={`Agregar Gasto`}>
+            <GModal show={show_form_tag} title={`Agregar Tipo de Gasto`}>
                 <GForm 
                     scheme={tag_scheme[0]} 
                     values={tag_values}
@@ -286,7 +296,7 @@ function AddMovimiento({after_save}){
             </GModal>
         }
         {show_form_classification[0] &&
-            <GModal show={show_form_classification} title={`Agregar Clasificacion`}>
+            <GModal show={show_form_classification} title={`Agregar Centro de Costos`}>
                 <GForm 
                     scheme={classification_scheme[0]} 
                     values={classification_values}

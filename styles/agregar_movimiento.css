@@ -14,6 +14,32 @@
 .accounts_container_title{
     color: var(--primary-color);
     padding: 1rem 0 1rem 0;
+    display: flex;
+}
+.accounts_container_title .add_account{
+    margin-left: auto;
+    position: relative;
+}
+.add_account .tooltip {
+    visibility: hidden;
+    width: 100px;
+    background-color: rgb(110 231 183 / 1);
+    color: #fff;
+    text-align: center;
+    border-radius: 5px;
+    padding: 5px 0;
+    position: absolute;
+    z-index: 1;
+    right: 105%; /* Ajusta según sea necesario */
+    top: 50%;
+    transform: translateY(-50%);
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.add_account:hover .tooltip {
+    visibility: visible;
+    opacity: 1;
 }
 .accounts_container_options{
     display: flex;
@@ -65,7 +91,7 @@
     justify-content: space-around;
     font-size: 1.4rem;
 }
-.tags_container{
+.tags_container_options{
     display: grid;
     margin-top: 1rem;
     grid-template-columns: 1fr;
@@ -155,7 +181,7 @@
 }
 
 @media (min-width: 1280px)  {
-    .tags_container{
+    .tags_container_options{
         grid-template-columns: 1fr 1fr;
     }
 }
