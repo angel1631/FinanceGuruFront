@@ -7,6 +7,7 @@ import { validate_form } from "../../Core/scripts/form.js";
 import { cast_money } from "../../Core/scripts/casts.js";
 import { getContrast } from "../../Core/scripts/color.js";
 import { GMoney } from "../../Core/components/GMoney.js";
+import { toast } from "../../Core/scripts/alerts.js";
 
 
 
@@ -89,9 +90,10 @@ function AddMovimiento({after_save}){
             let respuesta_json = await communication({url, data: account_values[0]});
             accounts[1]([...accounts[0],{...account_values[0],id: respuesta_json.id}]);
             show_form_account[1](false);
-            alert("Todo Ok");
+            toast("Todo Ok");
         }catch(err){
-            console.log(err); alert(err.error_message);
+            
+            console.log(err); toast(err.message);
         }
         
     }
@@ -103,10 +105,10 @@ function AddMovimiento({after_save}){
             let respuesta_json = await communication({url, data: tag_values[0]});
             tags[1]([...tags[0],{...tag_values[0],id: respuesta_json.id}]);
             show_form_tag[1](false);
-            alert("Todo Ok");
+            toast("Todo Ok");
             
         }catch(err){
-            console.log(err); alert(err.error_message);
+            console.log(err); toast(err.message);
         } 
     }
     async function save_new_classification(){
@@ -116,28 +118,28 @@ function AddMovimiento({after_save}){
             let respuesta_json = await communication({url, data: classification_values[0]});
             classifications[1]([...classifications[0],{...classification_values[0],id: respuesta_json.id}]);
             show_form_classification[1](false);
-            alert("Todo Ok");
+            toast("Todo Ok");
             
         }catch(err){
-            console.log(err); alert(err.error_message);
+            console.log(err); toast(err.message);
         } 
     }
     async function save_movimiento(){
         
         try{
             if(mov_value[0].description=='') throw 'Se debe definir una descripcion';
-            if(mov_value[0].amount=='') throw 'Se debe definir el monto';
-            if(mov_value[0].account=='') throw 'Se debe seleccionar una cuenta';
-            if(mov_value[0].tag=='') throw 'Se debe seleccionar una clasificacion';
+            if(mov_value[0].amount=='') throw {message: 'Se debe definir el monto'};
+            if(mov_value[0].account=='') throw {message: 'Se debe seleccionar una cuenta'};
+            if(mov_value[0].tag=='') throw {meesage: 'Se debe seleccionar una clasificacion'};
             let movimiento = {...mov_value[0], is_debit:'si'};
             if(!movimiento.classification) movimiento.classification = classifications[0][0].id; 
             let url = '/api/FinanceGuru/Services/save_movimiento';
             let respuesta_json = await communication({url, data: movimiento});
-            alert(respuesta_json.message);
+            toast(respuesta_json.message);
             after_save();
         }catch(err){
             console.log("---error al guardar",err);
-            alert(err.error_message);
+            toast(err);
         }
         
         
