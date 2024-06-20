@@ -181,39 +181,72 @@ function AddMovimiento({after_save}){
     function onChange(id,value){
         mov_value[1](prev_value=>({...prev_value, [id]: value}));
     }
+    async function delete_cost_center({id}){
+        try{
+            if(window.confirm("Esta seguro de eliminar el centro de costos, esto eliminara todos los gastos asociados a este centro de costos")){
+                let response = await communication({url: "/api/FinanceGuru/FGClassification/delete", data: {id}});
+                if(response.cod == 0) throw response.message
+                toast("Todo Ok");
+                get_list();
+            }
+        }catch(err){
+            toast(err);
+        }
+    }
+    async function delete_tag({id}){
+        try{
+            if(window.confirm("Esta seguro de eliminar el Tipo de gasto, esto eliminara todos los gastos asociados a este tipo de gasto")){
+                let response = await communication({url: "/api/FinanceGuru/FGClassification/delete", data: {id}});
+                if(response.cod == 0) throw response.message
+                toast("Todo Ok");
+                get_list();
+            }
+        }catch(err){
+            toast(err);
+        }
+    }
     return (
         <>
         {
         
             <GCard className="movimientos_container">
                
-                <div className="accounts_container move_container">
-                    <div className="accounts_container_title">
+                <div className="cost_center_container move_container">
+                    <div className="container_title">
                         <div>Cual es el centro de costos? </div>
-                        <div className="add_account button btn-sm bg-add sm-circle-btn" onClick={()=>{show_form_classification[1](true);}}>
+                        <div className="add_btn button btn-sm bg-add sm-circle-btn" onClick={()=>{show_form_classification[1](true);}}>
                             +
-                            <div className="tooltip bg-add">Crear centro de costos</div>
+                            <div className="tooltip bg-add">Crear nuevo centro de costos</div>
                         </div>
                     </div>
-                    <div className="classifications_container_options">
+                    <div className="container_options">
                         {classifications[0] && classifications[0].map((e)=>(
-                            <div className="classification_container" id={e.id} onClick={()=>{select_classification(e.id)}} >
-                                <div className="tag_icon"><i style={{color: e.color}} className="material-icons">{e.icon}</i></div>
-                                <div className="tag_title">{e.title}</div>
-                            </div>    
+                            <div className="option_container">
+                                <div className="classification_container option" id={e.id} onClick={()=>{select_classification(e.id)}} >
+                                    <div className="tag_icon"><i style={{color: e.color}} className="material-icons">{e.icon}</i></div>
+                                    <div className="tag_title">{e.title}</div>
+                                </div> 
+                                <div className="settings">
+                                    <i className="material-icons">settings</i>
+                                    <div className="tooltip">
+                                        <div onClick={()=>{delete_cost_center({id: e.id})}}>Delete</div>
+                                        <div>Modify</div>
+                                    </div>
+                                </div>
+                            </div>   
                         ))}
                     </div>
                     
                 </div>
                 <div className="accounts_container move_container">
-                    <div className="accounts_container_title">
+                    <div className="container_title">
                         <div>Con que cuenta se pagará? </div>
-                        <div className="add_account button btn-sm bg-add sm-circle-btn" onClick={()=>{show_form_account[1](true);}}>
+                        <div className="add_btn button btn-sm bg-add sm-circle-btn" onClick={()=>{show_form_account[1](true);}}>
                             +
-                            <div className="tooltip bg-add">Crear cuenta</div>
+                            <div className="tooltip bg-add">Crear nueva cuenta</div>
                         </div>
                     </div>
-                    <div className="accounts_container_options">
+                    <div className="container_options">
                         {accounts[0] && accounts[0].map((e)=>(
                             <div className="account_container" id={e.id} onClick={()=>{select_account(e.id)}} >
                                 <div className="account_title">{e.title}</div>
@@ -240,23 +273,32 @@ function AddMovimiento({after_save}){
                 </div>
                 
                 <div className="tags_container  move_container">
-                    <div className="accounts_container_title">
+                    <div className="container_title">
                         <div>Que tipo de gasto es? </div>
                         <div className="add_account button btn-sm bg-add sm-circle-btn" onClick={()=>{show_form_tag[1](true);}}>
                             +
-                            <div className="tooltip bg-add">Crear Tipo de Gasto</div>
+                            <div className="tooltip bg-add">Crear nuevo tipo de gasto</div>
                         </div>
                     </div>
-                    <div className="tags_container_options">
+                    <div className="container_options">
                         {tags[0] && tags[0].map((e)=>{
                             let contraste = getContrast(e.color, '#FFFFFF');
                             let new_style = {background: e.color};
                             if(contraste>4) new_style.color = "#FFFFFF";
                             return (
-                            <div className="tag_container" style={new_style} id={e.id} onClick={()=>{select_tag(e.id)}} >
-                                <div className="tag_icon"><i  className="material-icons-outlined">{e.icon}</i></div>
-                                <div className="tag_title">{e.title}</div>
-                            </div>    
+                                <div className="option_container">
+                                    <div className="tag_container option" style={new_style} id={e.id} onClick={()=>{select_tag(e.id)}} >
+                                        <div className="tag_icon"><i  className="material-icons-outlined">{e.icon}</i></div>
+                                        <div className="tag_title">{e.title}</div>
+                                    </div>
+                                    <div className="settings">
+                                        <i className="material-icons">settings</i>
+                                        <div className="tooltip">
+                                            <div onClick={()=>{delete_tag({id: e.id})}}>Delete</div>
+                                            <div>Modify</div>
+                                        </div>
+                                    </div>
+                                </div>
                         )})}
                     </div>
                 </div>

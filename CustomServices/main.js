@@ -7,6 +7,7 @@ import { AddMovimiento } from "./agregar_movimiento";
 import { cast_money } from "../../Core/scripts/casts";
 import { getContrast } from "../../Core/scripts/color";
 import { useRouter } from 'next/router';
+import { toast } from "../../Core/scripts/alerts";
 
 
 export async function server_props(context){
@@ -122,6 +123,18 @@ export default function main({server_props}){
       show_form_movimientos[1](false);
       get_resumen();
     }
+    async function delete_movimiento({id}){
+      try{
+          if(window.confirm("Esta seguro de eliminar el gasto")){
+              let response = await communication({url: "/api/FinanceGuru/FGMovimiento/delete", data: {id}});
+              if(response.cod == 0) throw response.message
+              toast("Todo Ok");
+              get_list();
+          }
+      }catch(err){
+          toast(err);
+      }
+  }
     return (
         <div>
             {show_form_movimientos[0] && 
@@ -140,9 +153,9 @@ export default function main({server_props}){
               return (
                 <div className="resumen_tag" style={new_style} key={index_a}>
                     <div className="head_resumen_tag">
-                      <i className="material-icons-outlined">{e.icon}</i>
-                      <label className="title">{e.title}</label>
-                      <label className="balance">Q. {cast_money({amount:e.balance})}</label>
+                      <i className="info icon material-icons-outlined">{e.icon}</i>
+                      <label className="info title">{e.title}</label>
+                      <label className="info balance">Q. {cast_money({amount:e.balance})}</label>
                       <div className="expandir" onClick={(c)=>{cargar_movimientos(e.id,c)}}>
                         <i className="material-icons-outlined icon_movimientos">arrow_drop_down</i>
                       </div>
@@ -150,10 +163,14 @@ export default function main({server_props}){
                     {e.movimientos.length>0 &&
                       <div className="detalle_resumen_tag">
                         {e.movimientos.map((m,index)=>(
-                          <div className="movimiento" key={index}>
-                            <label>{m.fecha}</label>
-                            <label>{m.description}</label>
-                            <label>Q. {cast_money({amount: m.amount})}</label>
+                          <div className="contenedor_movimiento">
+                            <div className="movimiento" key={index}>
+                              <label>{m.fecha}</label>
+                              <label>{m.description}</label>
+                              <label>Q. {cast_money({amount: m.amount})}</label>
+                              
+                            </div>
+                            <i className="material-icons btn_delete_move" onClick={()=>{delete_movimiento({id: m.id})}}>delete</i>
                           </div>
                         ))}
                       </div>

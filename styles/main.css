@@ -1,7 +1,7 @@
 .resumen_tag{
-    margin-top: 1rem;
+    margin-top: 0.5rem;
     border-radius: 1rem;
-    padding: 0.5rem 2rem 0.5rem 2rem;
+    padding: 0.7rem 1rem 0.5rem 0.7rem;
     box-sizing: border-box;
     width: 90%;
     margin-inline: auto;
@@ -17,12 +17,13 @@
     justify-content: center;
     align-items: center;
 }
+.head_resumen_tag .info{
+    margin-left: 1rem;
+}
 .resumen_tag i{
     font-size: 2rem;
 }
-.resumen_tag label{
-    margin-left: 2rem;
-}
+
 .resumen_tag .balance{
     font-weight:800;
 }
@@ -35,8 +36,23 @@
 }
 .detalle_resumen_tag{
     width: 95%;
-    background: white;
     padding: 0.5rem 1rem;
     border-radius: 1rem;
     margin-top: 0.5rem;
+}
+.detalle_resumen_tag .contenedor_movimiento{
+    background: #fff;
+    margin-top: 0.3rem;
+    border-radius: 1rem;
+    display: flex;
+    align-items: center;
+    padding: 0.5rem;
+}
+.contenedor_movimiento .movimiento{
+    display: flex;
+    flex-direction: column;
+}
+.contenedor_movimiento .btn_delete_move{
+    margin-left: auto;
+    color: rgb(239 68 68 / 1);
 }
