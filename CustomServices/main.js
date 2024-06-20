@@ -129,7 +129,7 @@ export default function main({server_props}){
               let response = await communication({url: "/api/FinanceGuru/FGMovimiento/delete", data: {id}});
               if(response.cod == 0) throw response.message
               toast("Todo Ok");
-              get_list();
+              get_resumen();
           }
       }catch(err){
           toast(err);
