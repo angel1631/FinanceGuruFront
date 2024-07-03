@@ -219,7 +219,7 @@ function AddMovimiento({after_save}){
                 let response = await communication({url: "/api/FinanceGuru/FGClassification/delete", data: {id}});
                 if(response.cod == 0) throw response.message
                 toast("Todo Ok");
-                get_list();
+                get_classifications();
             }
         }catch(err){
             toast(err);
@@ -231,7 +231,7 @@ function AddMovimiento({after_save}){
                 let response = await communication({url: "/api/FinanceGuru/FGTag/delete", data: {id}});
                 if(response.cod == 0) throw response.message
                 toast("Todo Ok");
-                get_list();
+                get_tags();
             }
         }catch(err){
             toast(err);
