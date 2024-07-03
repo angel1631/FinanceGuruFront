@@ -103,13 +103,13 @@ export default function main({server_props}){
         //let start = `${now.getFullYear()}-${((now.getMonth())+1)<10?"0"+((now.getMonth())+1):((now.getMonth())+1)}-01`;
       let data = {start,end};
       const resumen_clasificacion = await communication({url:`/api/FinanceGuru/Services/resumen_movimientos`, data});
-      let total_resumen = 0;
+      let total = 0;
       let resumen_f = resumen_clasificacion.map(r=>{
-        total_resumen += parseFloat(r.balance);
+        total += parseFloat(r.balance);
         return {...r,movimientos:[]}
       });
       resumen[1](resumen_f);
-      total_resumen[1](total_resumen);
+      total_resumen[1](total);
     }
     async function cargar_movimientos(id,el){
       
