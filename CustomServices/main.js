@@ -31,12 +31,12 @@ export async function server_props(context){
 
 export default function main({server_props}){
     const router = useRouter();
-    console.log("------server props, main", server_props);
+    
     if(server_props.error?.http_code ==401) router.push("/login");
     if(server_props?.error?.http_code==403) return(<Error txt={"El usuario no tiene acceso al recurso"}/>);
     
     let resumen = useState(server_props.resumen?server_props.resumen.map(r=>({...r,movimientos:[]})):[]);
-    let data = useState();
+    let total_resumen = useState(0);
     let now = new Date();
     let start_date = new Date(now.getFullYear(), now.getMonth(), 1);
     let end_date = new Date(now.getFullYear(), now.getMonth()+1,0);
@@ -44,8 +44,7 @@ export default function main({server_props}){
         end: end_date.getFullYear()+"-"+(("0" + (end_date.getMonth() + 1)).slice(-2))+"-"+(("0" + end_date.getDate()).slice(-2)) });
     let show_form_movimientos = useState(false);
     
-    let fecha_referencia = useState({start: (new Date(now.getFullYear(), now.getMonth(), 1)).toISOString(), end: (new Date(now.getFullYear(), now.getMonth()+1,0)).toISOString()})
-    
+   
     function grafica(){
       let grafica_div =  echarts.init(document.getElementById('grafica_resumen'));
       var options = {
@@ -102,9 +101,15 @@ export default function main({server_props}){
       }
         
         //let start = `${now.getFullYear()}-${((now.getMonth())+1)<10?"0"+((now.getMonth())+1):((now.getMonth())+1)}-01`;
-        let data = {start,end};
-        const resumen_clasificacion = await communication({url:`/api/FinanceGuru/Services/resumen_movimientos`, data});
-      resumen[1](resumen_clasificacion.map(r=>({...r,movimientos:[]})))
+      let data = {start,end};
+      const resumen_clasificacion = await communication({url:`/api/FinanceGuru/Services/resumen_movimientos`, data});
+      let total_resumen = 0;
+      let resumen_f = resumen_clasificacion.map(r=>{
+        total_resumen += parseFloat(r.balance);
+        return {...r,movimientos:[]}
+      });
+      resumen[1](resumen_f);
+      total_resumen[1](total_resumen);
     }
     async function cargar_movimientos(id,el){
       
@@ -175,6 +180,9 @@ export default function main({server_props}){
                 <div className="button btn-add sm-circle-btn btn-smsd" onClick={(e)=>{show_form_movimientos[1](true)}}> <i className="material-icons-outlined">add</i></div>
                 
                 <div id="grafica_resumen" className="grafica_resumen" ></div>
+                <div>
+                  <label>Total: </label><label>Q. {total_resumen[0]}</label>
+                </div>
             </GCard>
             {resumen[0].map((e,index_a)=>{
               let contraste = getContrast(e.color, '#FFFFFF');
