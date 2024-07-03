@@ -110,7 +110,14 @@ export default function main({server_props}){
       
       if(el.target.textContent.indexOf('down')>=0){
         let url = '/api/FinanceGuru/Services/buscar_movimientos';
-        let respuesta_json = await communication({url, data: {TagId: id, start: fecha_referencia[0].start,end:fecha_referencia[0].end}});
+        let now = new Date();
+        let start = (new Date(now.getFullYear(), now.getMonth(), 1)).toISOString();
+        let end = (new Date(now.getFullYear(), now.getMonth()+1,0)).toISOString();
+        if(fechas[0]?.start && fechas[0]?.end){
+          start = new Date(fechas[0].start).toISOString();
+          end = new Date(fechas[0].end).toISOString()
+        }
+        let respuesta_json = await communication({url, data: {TagId: id, start,end}});
         let new_resumen = resumen[0].map((e)=>{
           if(e.id==id)
             return {...e,movimientos:respuesta_json};
