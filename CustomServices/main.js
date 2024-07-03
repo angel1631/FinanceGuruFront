@@ -33,6 +33,7 @@ export default function main({server_props}){
     const router = useRouter();
     console.log("------server props, main", server_props);
     if(server_props.error?.http_code ==401) router.push("/login");
+    if(server_props?.error?.http_code==403) return(<Error txt={"El usuario no tiene acceso al recurso"}/>);
     
     let resumen = useState(server_props.resumen?server_props.resumen.map(r=>({...r,movimientos:[]})):[]);
     let data = useState()
