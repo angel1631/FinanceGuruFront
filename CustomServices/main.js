@@ -21,8 +21,12 @@ export async function server_props(context){
         console.log("iiiidata",data)
         const resumen_clasificacion = await communication({url:`/api/FinanceGuru/Services/resumen_movimientos`, data,session_token});
         
-        console.log("oooooooooooooooresumen",resumen_clasificacion);
-        return {resumen: resumen_clasificacion};
+        
+        let total_resumen = 0;
+        resumen_clasificacion.map(r=>{
+          total_resumen += parseFloat(r.balance);
+        })
+        return {resumen: resumen_clasificacion, total_resumen};
     }catch(error){
         console.log("Error SSR: ",error);
         return { error  }
@@ -36,7 +40,7 @@ export default function main({server_props}){
     if(server_props?.error?.http_code==403) return(<Error txt={"El usuario no tiene acceso al recurso"}/>);
     
     let resumen = useState(server_props.resumen?server_props.resumen.map(r=>({...r,movimientos:[]})):[]);
-    let total_resumen = useState(0);
+    let total_resumen = useState(server_props.total_resumen);
     let now = new Date();
     let start_date = new Date(now.getFullYear(), now.getMonth(), 1);
     let end_date = new Date(now.getFullYear(), now.getMonth()+1,0);
@@ -181,7 +185,7 @@ export default function main({server_props}){
                 
                 <div id="grafica_resumen" className="grafica_resumen" ></div>
                 <div>
-                  <label>Total: </label><label>Q. {total_resumen[0]}</label>
+                  <label>Total: </label><label>Q. {cast_money({amount: total_resumen[0]})}</label>
                 </div>
             </GCard>
             {resumen[0].map((e,index_a)=>{
