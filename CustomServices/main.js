@@ -36,9 +36,14 @@ export default function main({server_props}){
     if(server_props?.error?.http_code==403) return(<Error txt={"El usuario no tiene acceso al recurso"}/>);
     
     let resumen = useState(server_props.resumen?server_props.resumen.map(r=>({...r,movimientos:[]})):[]);
-    let data = useState()
-    let show_form_movimientos = useState(false);
+    let data = useState();
     let now = new Date();
+    let start_date = new Date(now.getFullYear(), now.getMonth(), 1);
+    let end_date = new Date(now.getFullYear(), now.getMonth()+1,0);
+    let fechas = useState({start: start_date.getFullYear()+"-"+(("0" + (start_date.getMonth() + 1)).slice(-2))+"-"+(("0" + start_date.getDate()).slice(-2)) , 
+        end: end_date.getFullYear()+"-"+(("0" + (end_date.getMonth() + 1)).slice(-2))+"-"+(("0" + end_date.getDate()).slice(-2)) });
+    let show_form_movimientos = useState(false);
+    
     let fecha_referencia = useState({start: (new Date(now.getFullYear(), now.getMonth(), 1)).toISOString(), end: (new Date(now.getFullYear(), now.getMonth()+1,0)).toISOString()})
     
     function grafica(){
@@ -89,8 +94,13 @@ export default function main({server_props}){
     },[resumen])
     async function get_resumen(){
       let now = new Date();
-        let start = (new Date(now.getFullYear(), now.getMonth(), 1)).toISOString();
-        let end = (new Date(now.getFullYear(), now.getMonth()+1,0)).toISOString();
+      let start = (new Date(now.getFullYear(), now.getMonth(), 1)).toISOString();
+      let end = (new Date(now.getFullYear(), now.getMonth()+1,0)).toISOString();
+      if(fechas[0]?.start && fechas[0]?.end){
+        start = new Date(fechas[0].start).toISOString();
+        end = new Date(fechas[0].end).toISOString()
+      }
+        
         //let start = `${now.getFullYear()}-${((now.getMonth())+1)<10?"0"+((now.getMonth())+1):((now.getMonth())+1)}-01`;
         let data = {start,end};
         const resumen_clasificacion = await communication({url:`/api/FinanceGuru/Services/resumen_movimientos`, data});
@@ -137,7 +147,11 @@ export default function main({server_props}){
       }catch(err){
           toast(err);
       }
-  }
+    }
+    function change_fecha(e,id){
+      let valor = e.target.value;
+      fechas[1]({...fechas[0], [id]:valor})
+    }
     return (
         <div>
             {show_form_movimientos[0] && 
@@ -146,7 +160,13 @@ export default function main({server_props}){
               </GModal>
             }
             <GCard>
+            <div className="fechas">
+                  <input type="date" value={fechas[0].start} onChange={(e)=>{change_fecha(e,'start')}}/>
+                  <input type="date" value={fechas[0].end} onChange={(e)=>{change_fecha(e,'end')}}/>
+                  <i className="material-icons-outlined" onClick={get_resumen}>refresh</i>
+                </div>
                 <div className="button btn-add sm-circle-btn btn-smsd" onClick={(e)=>{show_form_movimientos[1](true)}}> <i className="material-icons-outlined">add</i></div>
+                
                 <div id="grafica_resumen" className="grafica_resumen" ></div>
             </GCard>
             {resumen[0].map((e,index_a)=>{
