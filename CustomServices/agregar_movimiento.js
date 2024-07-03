@@ -31,8 +31,14 @@ function AddMovimiento({after_save}){
 
     let today = now.getFullYear()+"-"+(month)+"-"+(day) ;
     let mov_value = useState({description:'',amount:'', account:'', tag:'', fecha:today});
-    let show_avanzadas = useState(false);
     let show_first_account = useState(true);
+    let tag_form_action = useState('insert');
+    let tag_id = useState();
+    let tag_default_values = useState({});
+
+    let classification_form_action = useState('insert');
+    let classification_id = useState();
+    let classification_default_values = useState({});
 
     useEffect(()=>{
         get_account_scheme();
@@ -111,6 +117,19 @@ function AddMovimiento({after_save}){
             console.log(err); toast(err.message);
         } 
     }
+    async function update_tag(){
+        try{
+            await validate_form(tag_values[0], tag_scheme[0].fields);
+            let url = '/api/FinanceGuru/FGTag/update';
+            let respuesta_json = await communication({url, data: tag_values[0]});
+            show_form_tag[1](false);
+            tags[1](tags[0].map((tag)=>{if(tag.id==tag_values[0].id)return tag_values[0]; else return tag}));
+            toast("Todo Ok");
+            
+        }catch(err){
+            console.log(err); toast(err.message);
+        } 
+    }
     async function save_new_classification(){
         try{
             await validate_form(classification_values[0], classification_scheme[0].fields);
@@ -118,6 +137,19 @@ function AddMovimiento({after_save}){
             let respuesta_json = await communication({url, data: classification_values[0]});
             classifications[1]([...classifications[0],{...classification_values[0],id: respuesta_json.id}]);
             show_form_classification[1](false);
+            toast("Todo Ok");
+            
+        }catch(err){
+            console.log(err); toast(err.message);
+        } 
+    }
+    async function update_classification(){
+        try{
+            await validate_form(classification_values[0], classification_scheme[0].fields);
+            let url = '/api/FinanceGuru/FGClassification/update';
+            let respuesta_json = await communication({url, data: classification_values[0]});
+            show_form_classification[1](false);
+            classifications[1](classifications[0].map((classification)=>{if(classification.id==classification_values[0].id)return classification_values[0]; else return classification}));
             toast("Todo Ok");
             
         }catch(err){
@@ -196,7 +228,7 @@ function AddMovimiento({after_save}){
     async function delete_tag({id}){
         try{
             if(window.confirm("Esta seguro de eliminar el Tipo de gasto, esto eliminara todos los gastos asociados a este tipo de gasto")){
-                let response = await communication({url: "/api/FinanceGuru/FGClassification/delete", data: {id}});
+                let response = await communication({url: "/api/FinanceGuru/FGTag/delete", data: {id}});
                 if(response.cod == 0) throw response.message
                 toast("Todo Ok");
                 get_list();
@@ -230,7 +262,12 @@ function AddMovimiento({after_save}){
                                     <i className="material-icons">settings</i>
                                     <div className="tooltip">
                                         <div onClick={()=>{delete_cost_center({id: e.id})}}>Delete</div>
-                                        <div>Modify</div>
+                                        <div onClick={()=>{
+                                            show_form_classification[1](true);
+                                            classification_default_values[1](e);
+                                            classification_form_action[1]('update');
+                                            classification_id[1](e.id);
+                                        }}>Modify</div>
                                     </div>
                                 </div>
                             </div>   
@@ -295,7 +332,12 @@ function AddMovimiento({after_save}){
                                         <i className="material-icons">settings</i>
                                         <div className="tooltip">
                                             <div onClick={()=>{delete_tag({id: e.id})}}>Delete</div>
-                                            <div>Modify</div>
+                                            <div onClick={()=>{
+                                                show_form_tag[1](true);
+                                                tag_default_values[1](e);
+                                                tag_form_action[1]('update');
+                                                tag_id[1](e.id);
+                                            }}>Modify</div>
                                         </div>
                                     </div>
                                 </div>
@@ -331,10 +373,11 @@ function AddMovimiento({after_save}){
                 <GForm 
                     scheme={tag_scheme[0]} 
                     values={tag_values}
-                    onSubmit={save_new_tag} 
-                    action={'insert'}
-                    primary_action={'insert'}/>
-                
+                    onSubmit={tag_form_action[0]=='insert'?save_new_tag:update_tag} 
+                    action={tag_form_action[0]}
+                    primary_action={tag_form_action[0]}
+                    PRIMARY_ID={tag_id[0]}
+                    values_base={tag_default_values[0]}/>
             </GModal>
         }
         {show_form_classification[0] &&
@@ -342,9 +385,12 @@ function AddMovimiento({after_save}){
                 <GForm 
                     scheme={classification_scheme[0]} 
                     values={classification_values}
-                    onSubmit={save_new_classification} 
-                    action={'insert'}
-                    primary_action={'insert'}/>
+                    onSubmit={classification_form_action[0]=='insert'?save_new_classification:update_classification} 
+                    action={classification_form_action[0]}
+                    primary_action={classification_form_action[0]}
+                    PRIMARY_ID={classification_id[0]}
+                    values_base={classification_default_values[0]}
+                    />
                 
             </GModal>
         }

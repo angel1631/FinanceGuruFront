@@ -28,10 +28,12 @@ export async function server_props(context){
         return { error  }
     }
 }
+
 export default function main({server_props}){
     const router = useRouter();
     console.log("------server props, main", server_props);
     if(server_props.error?.http_code ==401) router.push("/login");
+    
     let resumen = useState(server_props.resumen?server_props.resumen.map(r=>({...r,movimientos:[]})):[]);
     let data = useState()
     let show_form_movimientos = useState(false);
@@ -170,7 +172,7 @@ export default function main({server_props}){
                               <label>Q. {cast_money({amount: m.amount})}</label>
                               
                             </div>
-                            <i className="material-icons btn_delete_move" onClick={()=>{delete_movimiento({id: m.id})}}>delete</i>
+                            <i className="material-icons-outlined btn_delete_move" onClick={()=>{delete_movimiento({id: m.id})}}>delete</i>
                           </div>
                         ))}
                       </div>
