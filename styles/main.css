@@ -27,12 +27,25 @@
 .resumen_tag .balance{
     font-weight:800;
 }
+.button_add_move_container{
+   width: 100%;
+   display: flex;
+   justify-content: right; 
+}
 .grafica_resumen{
     width: 100%;
     height: 20rem;
 }
 .expandir{
     cursor: pointer;
+}
+.total_resumen_container{
+    width: 100%;
+    padding:0 0 1.5rem 0;
+    display: flex;
+    justify-content: center;
+    font-size: 1.2rem;
+    font-weight: bold;
 }
 .detalle_resumen_tag{
     width: 95%;
@@ -56,3 +69,4 @@
     margin-left: auto;
     color: rgb(239 68 68 / 1);
 }
+

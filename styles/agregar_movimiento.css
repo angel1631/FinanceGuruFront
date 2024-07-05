@@ -20,6 +20,9 @@
 .container_title .add_btn{
     margin-left: auto;
     position: relative;
+    animation-name: pulse;
+    animation-duration: 2s;
+    animation-iteration-count: infinite;
 }
 .add_btn .tooltip {
     visibility: hidden;
@@ -61,11 +64,13 @@
 .container_options .option_container{
     display: flex;
     align-items: center;
+    position: relative;
 }
 
 .option_container .option{
     align-self: stretch;
     flex: 1;
+    
 }
 .option_container .settings{
     margin-left: auto;
@@ -122,6 +127,20 @@
 .add_account:hover .tooltip {
     visibility: visible;
     opacity: 1;
+}
+.move_add_button{
+    background-color: rgb(110 231 183 / 1);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0.5rem 0.5rem 0.5rem 1rem;
+    border-radius: 1rem 0rem 0rem 1rem;
+    font-weight: bold;
+    box-shadow: -5px 5px 5px rgba(0,0,0,0.2);
+    margin-left: auto;
+    position: relative;
+
+
 }
 .accounts_container .container_options{
     display: flex;
@@ -216,7 +235,16 @@
     font-size: 1.2rem;
 }
 .active{
-    background: rgb(240,240,240) !important;
+    box-shadow: 0 0 20px 0 green;
+    animation-name: pulse;
+    animation-duration: 2s;
+    animation-iteration-count: infinite;
+
+}
+.active_pulse{
+    animation-name: pulse;
+    animation-duration: 2s;
+    animation-iteration-count: infinite;
 }
 .buttons_container{
     display: flex;
@@ -261,9 +289,27 @@
 .preview .account_icon i{
     font-size: 5rem;
 }
+.advanced_options_trigger{
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(#fff 70%, rgba(0,0,0,0.2));
+    margin-top: 2rem;
+    height: 2rem;
+    border-radius: 0rem 0rem 1rem 1rem;
+    cursor: pointer;
+    box-shadow: 0 10px 10px rgba(0,0,0,0.3);
+}
+
 
 @media (min-width: 1280px)  {
     .tags_container_options{
         grid-template-columns: 1fr 1fr;
     }
+}
+@keyframes pulse {
+    0%{transform: scale(1)}
+    50%{transform: scale(0.95)}
+    100%{transform: scale(1)}
 }

@@ -176,17 +176,23 @@ export default function main({server_props}){
               </GModal>
             }
             <GCard>
-            <div className="fechas">
+                <div className="button_add_move_container">
+                <div className="move_add_button active_pulse" onClick={(e)=>{show_form_movimientos[1](true)}}>
+                    Agregar un gasto
+                </div>
+                </div>
+
+                
+                <div id="grafica_resumen" className="grafica_resumen" ></div>
+                <div className="total_resumen_container">
+                  <label>Total: </label><label>Q. {cast_money({amount: total_resumen[0]})}</label>
+                </div>
+                <div className="fechas">
                   <input type="date" value={fechas[0].start} onChange={(e)=>{change_fecha(e,'start')}}/>
                   <input type="date" value={fechas[0].end} onChange={(e)=>{change_fecha(e,'end')}}/>
                   <i className="material-icons-outlined" onClick={get_resumen}>refresh</i>
                 </div>
-                <div className="button btn-add sm-circle-btn btn-smsd" onClick={(e)=>{show_form_movimientos[1](true)}}> <i className="material-icons-outlined">add</i></div>
                 
-                <div id="grafica_resumen" className="grafica_resumen" ></div>
-                <div>
-                  <label>Total: </label><label>Q. {cast_money({amount: total_resumen[0]})}</label>
-                </div>
             </GCard>
             {resumen[0].map((e,index_a)=>{
               let contraste = getContrast(e.color, '#FFFFFF');

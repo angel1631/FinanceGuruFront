@@ -29,12 +29,12 @@ function AddMovimiento({after_save}){
     let day = ("0" + now.getDate()).slice(-2);
     let month = ("0" + (now.getMonth() + 1)).slice(-2);
 
-    let today = now.getFullYear()+"-"+(month)+"-"+(day) ;
-    let mov_value = useState({description:'',amount:'', account:'', tag:'', fecha:today});
+    let mov_value = useState({description:'',amount:'', account:'', tag:'', fecha:now.getFullYear()+"-"+(month)+"-"+(day)});
     let show_first_account = useState(true);
     let tag_form_action = useState('insert');
     let tag_id = useState();
     let tag_default_values = useState({});
+    let advanced_options = useState(false);
 
     let classification_form_action = useState('insert');
     let classification_id = useState();
@@ -52,10 +52,12 @@ function AddMovimiento({after_save}){
         const data = await communication({url:`/api/FinanceGuru/Services/user_accounts`});
         if(data.length==0) show_form_account[1](true);
         accounts[1](data);
+        mov_value[1]({...mov_value[0], account: data[0].id});
     }
     async function get_classifications(){
         const data = await communication({url:`/api/FinanceGuru/Services/user_classifications`});
         classifications[1](data);
+        mov_value[1]({...mov_value[0], classification: data[0].id});
     }
     async function get_tags(){
         const data = await communication({url:`/api/FinanceGuru/Services/user_tags?expense=si`});
@@ -159,9 +161,8 @@ function AddMovimiento({after_save}){
     async function save_movimiento(){
         
         try{
-            if(mov_value[0].description=='') throw 'Se debe definir una descripcion';
             if(mov_value[0].amount=='') throw {message: 'Se debe definir el monto'};
-            if(mov_value[0].account=='') throw {message: 'Se debe seleccionar una cuenta'};
+            if(mov_value[0].account==''){throw {message: 'Se debe seleccionar una cuenta'};} 
             if(mov_value[0].tag=='') throw {meesage: 'Se debe seleccionar una clasificacion'};
             let movimiento = {...mov_value[0], is_debit:'si'};
             if(!movimiento.classification) movimiento.classification = classifications[0][0].id; 
@@ -178,35 +179,26 @@ function AddMovimiento({after_save}){
     }
     async function select_account(id){
         if(mov_value[0].account!=id){
-            let account_active = document.getElementsByClassName('account_container active');
-            if(account_active.length>0){account_active[0].classList.remove('active')};
-            document.getElementById(id).classList.add('active');
             mov_value[1](prev_value=>({...prev_value, account: id}));
         }else{
-            document.getElementById(id).classList.remove('active');
             mov_value[1](prev_value=>({...prev_value, account: ''}));
         }
     }
     async function select_tag(id){
         if(mov_value[0].tag!=id){
-            let tag_active = document.getElementsByClassName('tag_container active');
-            if(tag_active.length>0){tag_active[0].classList.remove('active')};
-            document.getElementById(id).classList.add('active');
             mov_value[1](prev_value=>({...prev_value, tag: id}));
         }else{
-            document.getElementById(id).classList.remove('active');
             mov_value[1](prev_value=>({...prev_value, tag: ''}));
         }
+        let amount_input = document.getElementById('amount');
+        amount_input.scrollIntoView({ behavior: 'smooth' });
+        amount_input.focus();
     }
 
     async function select_classification(id){
         if(mov_value[0].classification!=id){
-            let classification_active = document.getElementsByClassName('classification_container active');
-            if(classification_active.length>0){classification_active[0].classList.remove('active')};
-            document.getElementById(id).classList.add('active');
             mov_value[1](prev_value=>({...prev_value, classification: id}));
         }else{
-            document.getElementById(id).classList.remove('active');
             mov_value[1](prev_value=>({...prev_value, classification: ''}));
         }
     }
@@ -242,79 +234,11 @@ function AddMovimiento({after_save}){
         {
         
             <GCard className="movimientos_container">
-               
-                <div className="cost_center_container move_container">
-                    <div className="container_title">
-                        <div>Cual es el centro de costos? </div>
-                        <div className="add_btn button btn-sm bg-add sm-circle-btn" onClick={()=>{show_form_classification[1](true);}}>
-                            +
-                            <div className="tooltip bg-add">Crear nuevo centro de costos</div>
-                        </div>
-                    </div>
-                    <div className="container_options">
-                        {classifications[0] && classifications[0].map((e)=>(
-                            <div className="option_container">
-                                <div className="classification_container option" id={e.id} onClick={()=>{select_classification(e.id)}} >
-                                    <div className="tag_icon"><i style={{color: e.color}} className="material-icons">{e.icon}</i></div>
-                                    <div className="tag_title">{e.title}</div>
-                                </div> 
-                                <div className="settings">
-                                    <i className="material-icons">settings</i>
-                                    <div className="tooltip">
-                                        <div onClick={()=>{delete_cost_center({id: e.id})}}>Delete</div>
-                                        <div onClick={()=>{
-                                            show_form_classification[1](true);
-                                            classification_default_values[1](e);
-                                            classification_form_action[1]('update');
-                                            classification_id[1](e.id);
-                                        }}>Modify</div>
-                                    </div>
-                                </div>
-                            </div>   
-                        ))}
-                    </div>
-                    
-                </div>
-                <div className="accounts_container move_container">
-                    <div className="container_title">
-                        <div>Con que cuenta se pagará? </div>
-                        <div className="add_btn button btn-sm bg-add sm-circle-btn" onClick={()=>{show_form_account[1](true);}}>
-                            +
-                            <div className="tooltip bg-add">Crear nueva cuenta</div>
-                        </div>
-                    </div>
-                    <div className="container_options">
-                        {accounts[0] && accounts[0].map((e)=>(
-                            <div className="account_container" id={e.id} onClick={()=>{select_account(e.id)}} >
-                                <div className="account_title">{e.title}</div>
-                                <div className="account_icon"><i className="material-icons-outlined" style={{color: e.color}} >{e.icon}</i></div>
-                            </div>    
-                        ))}
-                    </div>
-                    
-                </div>
-                <div className="monto_container GForm">
-                    <div className="gform-line">
-                        <textarea type="text" id="description" value={mov_value[0].description} onChange={(e)=>{onChange('description', e.target.value)}}/>
-                        <label htmlFor="description" className="field-description">Descripcion</label>
-                    </div>
-                    <div className="gform-line">
-                        <GMoney id="amount" value={mov_value[0].amount} field={{id:"amount", description:'Monto'}} onChange={onChange} />
-                        
-                        <label htmlFor="amount" className="field-description">Monto</label>
-                    </div>
-                    <div className="gform-line">
-                        <input type="date" id="fecha" value={mov_value[0].fecha} onChange={(e)=>{onChange('fecha', e.target.value)}}/> 
-                    </div>
-                    
-                </div>
-                
                 <div className="tags_container  move_container">
                     <div className="container_title">
-                        <div>Que tipo de gasto es? </div>
-                        <div className="add_account button btn-sm bg-add sm-circle-btn" onClick={()=>{show_form_tag[1](true);}}>
-                            +
-                            <div className="tooltip bg-add">Crear nuevo tipo de gasto</div>
+                        <div>Que tipo de gasto desea reportar? </div>
+                        <div className="move_add_button" onClick={()=>{show_form_tag[1](true);}}>
+                            Crear tipo de gasto
                         </div>
                     </div>
                     <div className="container_options">
@@ -324,7 +248,7 @@ function AddMovimiento({after_save}){
                             if(contraste>4) new_style.color = "#FFFFFF";
                             return (
                                 <div className="option_container">
-                                    <div className="tag_container option" style={new_style} id={e.id} onClick={()=>{select_tag(e.id)}} >
+                                    <div className={`tag_container option ${mov_value[0].tag==e.id?'active':''}`} style={new_style} id={e.id} onClick={()=>{select_tag(e.id)}} >
                                         <div className="tag_icon"><i  className="material-icons-outlined">{e.icon}</i></div>
                                         <div className="tag_title">{e.title}</div>
                                     </div>
@@ -344,7 +268,89 @@ function AddMovimiento({after_save}){
                         )})}
                     </div>
                 </div>
+                
+                <div className="monto_container GForm">
+                    <div className="gform-line">
+                        <GMoney id="amount" value={mov_value[0].amount} field={{id:"amount", description:'Monto'}} onChange={onChange} />
+                        
+                        <label htmlFor="amount" className="field-description">Cuanto gasto</label>
+                    </div>
+                    
+                    <div className="gform-line">
+                        <input type="date" id="fecha" value={mov_value[0].fecha} onChange={(e)=>{onChange('fecha', e.target.value)}}/> 
+                        <label htmlFor="fecha" className="field-description">Fecha que realizo el gasto</label>
+                    </div>
+                    <div className="gform-line">
+                        <textarea type="text" id="description" value={mov_value[0].description} onChange={(e)=>{onChange('description', e.target.value)}}/>
+                        <label htmlFor="description" className="field-description">Detallar el gasto</label>
+                    </div>
+                    
+                    
+                </div>
+                
                 <button className="send button save_move" onClick={save_movimiento}>Guardar</button>
+                {advanced_options[0] && 
+                    <div className="advanced_options_container no_display">
+                        <div className="cost_center_container move_container">
+                            <div className="container_title">
+                                <div>Cual es el centro de costos? </div>
+                                <div className="add_btn button btn-sm bg-add sm-circle-btn" onClick={()=>{show_form_classification[1](true);}}>
+                                    +
+                                    <div className="tooltip bg-add">Crear nuevo centro de costos</div>
+                                </div>
+                            </div>
+                            <div className="container_options">
+                                {classifications[0] && classifications[0].map((e)=>(
+                                    <div className="option_container">
+                                        <div className={`classification_container option ${mov_value[0].classification==e.id?'active':''}`} id={e.id} onClick={()=>{select_classification(e.id)}} >
+                                            <div className="tag_icon"><i style={{color: e.color}} className="material-icons">{e.icon}</i></div>
+                                            <div className="tag_title">{e.title}</div>
+                                        </div> 
+                                        <div className="settings">
+                                            <i className="material-icons">settings</i>
+                                            <div className="tooltip">
+                                                <div onClick={()=>{delete_cost_center({id: e.id})}}>Delete</div>
+                                                <div onClick={()=>{
+                                                    show_form_classification[1](true);
+                                                    classification_default_values[1](e);
+                                                    classification_form_action[1]('update');
+                                                    classification_id[1](e.id);
+                                                }}>Modify</div>
+                                            </div>
+                                        </div>
+                                    </div>   
+                                ))}
+                            </div>
+                            
+                        </div>
+                        <div className="accounts_container move_container">
+                            <div className="container_title">
+                                <div>Con que pagará? </div>
+                                <div className="add_btn button btn-sm bg-add sm-circle-btn" onClick={()=>{show_form_account[1](true);}}>
+                                    +
+                                    <div className="tooltip bg-add">Crear medio de pago</div>
+                                </div>
+                            </div>
+                            <div className="container_options">
+                                {accounts[0] && accounts[0].map((e)=>(
+                                    <div className={`account_container ${mov_value[0].account==e.id?'active':''}`} id={e.id} onClick={()=>{select_account(e.id)}} >
+                                        <div className="account_title">{e.title}</div>
+                                        <div className="account_icon"><i className="material-icons-outlined" style={{color: e.color}} >{e.icon}</i></div>
+                                    </div>    
+                                ))}
+                            </div>
+                            
+                        </div>
+                        
+                    </div>
+                    
+                }
+                <div className="advanced_options_trigger" onClick={(e)=>{advanced_options[1](!advanced_options[0]);}}>
+                    <i className="material-icons-outlined">
+                        {advanced_options[0] ? "expand_less":"expand_more"}
+                    </i>
+                </div>
+                
                 
             </GCard>
         }
