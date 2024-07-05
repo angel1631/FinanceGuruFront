@@ -9,7 +9,7 @@
     justify-content: center;
     align-items: center;
     box-shadow: rgba(0, 0, 0, 0.1) 0rem 0.25rem 0.375rem -0.0625rem, rgba(0, 0, 0, 0.06) 0rem 0.125rem 0.25rem -0.0625rem;
-    color: var(--primary-color);
+    color: var(--old-primary-color);
     flex-direction: column;
 }
 .resumen_tag .head_resumen_tag{
