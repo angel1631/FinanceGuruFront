@@ -52,12 +52,12 @@ function AddMovimiento({after_save}){
         const data = await communication({url:`/api/FinanceGuru/Services/user_accounts`});
         if(data.length==0) show_form_account[1](true);
         accounts[1](data);
-        mov_value[1]({...mov_value[0], account: data[0].id});
+        mov_value[1](prev_value=>({...prev_value, account: data[0].id}));
     }
     async function get_classifications(){
         const data = await communication({url:`/api/FinanceGuru/Services/user_classifications`});
         classifications[1](data);
-        mov_value[1]({...mov_value[0], classification: data[0].id});
+        mov_value[1]((prev_value)=>({...prev_value, classification: data[0].id}));
     }
     async function get_tags(){
         const data = await communication({url:`/api/FinanceGuru/Services/user_tags?expense=si`});
