@@ -139,8 +139,7 @@
     box-shadow: -5px 5px 5px rgba(0,0,0,0.2);
     margin-left: auto;
     position: relative;
-
-
+    cursor: pointer;
 }
 .accounts_container .container_options{
     display: flex;

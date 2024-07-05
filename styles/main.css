@@ -69,4 +69,33 @@
     margin-left: auto;
     color: rgb(239 68 68 / 1);
 }
+.date_menu{
+    display: flex;
+    justify-content: space-around;
+    align-items: start;
 
+}
+.date_menu_option{
+    cursor: pointer;
+}
+.fechas_trigger{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.fechas{
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    gap:0.5rem;
+    margin-top: 1rem;
+}
+.fechas .refresh_icon{
+    padding: 0.5rem;
+    box-sizing: content-box;
+    background: rgb(110 231 183 / 1);
+    border-radius: 0.5rem;
+}
+.active_date{
+    border-bottom: 3px solid var(--accent-color);
+}

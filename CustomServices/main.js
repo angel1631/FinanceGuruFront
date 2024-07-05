@@ -47,7 +47,8 @@ export default function main({server_props}){
     let fechas = useState({start: start_date.getFullYear()+"-"+(("0" + (start_date.getMonth() + 1)).slice(-2))+"-"+(("0" + start_date.getDate()).slice(-2)) , 
         end: end_date.getFullYear()+"-"+(("0" + (end_date.getMonth() + 1)).slice(-2))+"-"+(("0" + end_date.getDate()).slice(-2)) });
     let show_form_movimientos = useState(false);
-    
+    let show_fechas = useState(false);
+    let selected_date = useState('current');
    
     function grafica(){
       let grafica_div =  echarts.init(document.getElementById('grafica_resumen'));
@@ -168,65 +169,98 @@ export default function main({server_props}){
       let valor = e.target.value;
       fechas[1]({...fechas[0], [id]:valor})
     }
+    function set_month(month){
+      let now = new Date();
+      let start_date;
+      let end_date;
+      if(month=='current'){
+        start_date = new Date(now.getFullYear(), now.getMonth(), 1);
+        end_date = new Date(now.getFullYear(), now.getMonth()+1,0);
+        selected_date[1]('current');
+        get_resumen();
+      }else if(month=='last'){
+        start_date = new Date(now.getFullYear(), now.getMonth()-1, 1);
+        end_date = new Date(now.getFullYear(), now.getMonth(),0);
+        selected_date[1]('last');
+        get_resumen();
+      }
+      
+      fechas[1]({start: start_date.getFullYear()+"-"+(("0" + (start_date.getMonth() + 1)).slice(-2))+"-"+(("0" + start_date.getDate()).slice(-2)) , 
+        end: end_date.getFullYear()+"-"+(("0" + (end_date.getMonth() + 1)).slice(-2))+"-"+(("0" + end_date.getDate()).slice(-2)) });
+    }
     return (
         <div>
-            {show_form_movimientos[0] && 
-              <GModal show={show_form_movimientos} title={`Agregar Movimientos`} onClouse={onClouseAddMovimiento}>
-                  <AddMovimiento after_save={after_save_movimiento}/>
-              </GModal>
-            }
-            <GCard>
-                <div className="button_add_move_container">
-                <div className="move_add_button active_pulse" onClick={(e)=>{show_form_movimientos[1](true)}}>
-                    Agregar un gasto
-                </div>
-                </div>
+          {show_form_movimientos[0] && 
+            <GModal show={show_form_movimientos} title={`Agregar Movimientos`} onClouse={onClouseAddMovimiento}>
+                <AddMovimiento after_save={after_save_movimiento}/>
+            </GModal>
+          }
+          <GCard>
+              <div className="button_add_move_container">
+              <div className="move_add_button active_pulse" onClick={(e)=>{show_form_movimientos[1](true)}}>
+                  Agregar un gasto
+              </div>
+              </div>
 
-                
-                <div id="grafica_resumen" className="grafica_resumen" ></div>
-                <div className="total_resumen_container">
-                  <label>Total: </label><label>Q. {cast_money({amount: total_resumen[0]})}</label>
+              
+              <div id="grafica_resumen" className="grafica_resumen" ></div>
+              <div className="total_resumen_container">
+                <label>Q. {cast_money({amount: total_resumen[0]})}</label>
+              </div>
+              <div className="date_menu">
+                <div className={`gastos_mes_button date_menu_option ${selected_date[0]=='current'? 'active_date': ''}`} onClick={()=>{set_month('current');}}>
+                  Gastos del mes
                 </div>
+                <div className={`gastos_mes_button date_menu_option ${selected_date[0]=='last'? 'active_date': ''}`} onClick={()=>{set_month('last');}}>
+                  Gastos mes pasado
+                </div>
+                <div className="fechas_trigger date_menu_option" onClick={()=>{show_fechas[1](!show_fechas[0])}}>
+                  Otra fecha <i className="material-icons-outlined">navigate_next</i>
+                </div>
+              </div>
+              
+              {show_fechas[0] &&  
                 <div className="fechas">
                   <input type="date" value={fechas[0].start} onChange={(e)=>{change_fecha(e,'start')}}/>
                   <input type="date" value={fechas[0].end} onChange={(e)=>{change_fecha(e,'end')}}/>
-                  <i className="material-icons-outlined" onClick={get_resumen}>refresh</i>
-                </div>
-                
-            </GCard>
-            {resumen[0].map((e,index_a)=>{
-              let contraste = getContrast(e.color, '#FFFFFF');
-              let new_style = {background: e.color};
-              if(contraste>4) new_style.color = "#FFFFFF";
-              return (
-                <div className="resumen_tag" style={new_style} key={index_a}>
-                    <div className="head_resumen_tag">
-                      <i className="info icon material-icons-outlined">{e.icon}</i>
-                      <label className="info title">{e.title}</label>
-                      <label className="info balance">Q. {cast_money({amount:e.balance})}</label>
-                      <div className="expandir" onClick={(c)=>{cargar_movimientos(e.id,c)}}>
-                        <i className="material-icons-outlined icon_movimientos">arrow_drop_down</i>
-                      </div>
+                  <i className="material-icons-outlined refresh_icon" onClick={()=>{selected_date[1]("");get_resumen();}}>refresh</i>
+                </div>}
+              
+              
+          </GCard>
+          {resumen[0].map((e,index_a)=>{
+            let contraste = getContrast(e.color, '#FFFFFF');
+            let new_style = {background: e.color};
+            if(contraste>4) new_style.color = "#FFFFFF";
+            return (
+              <div className="resumen_tag" style={new_style} key={index_a}>
+                  <div className="head_resumen_tag">
+                    <i className="info icon material-icons-outlined">{e.icon}</i>
+                    <label className="info title">{e.title}</label>
+                    <label className="info balance">Q. {cast_money({amount:e.balance})}</label>
+                    <div className="expandir" onClick={(c)=>{cargar_movimientos(e.id,c)}}>
+                      <i className="material-icons-outlined icon_movimientos">arrow_drop_down</i>
                     </div>
-                    {e.movimientos.length>0 &&
-                      <div className="detalle_resumen_tag">
-                        {e.movimientos.map((m,index)=>(
-                          <div className="contenedor_movimiento">
-                            <div className="movimiento" key={index}>
-                              <label>{m.fecha}</label>
-                              <label>{m.description}</label>
-                              <label>Q. {cast_money({amount: m.amount})}</label>
-                              
-                            </div>
-                            <i className="material-icons-outlined btn_delete_move" onClick={()=>{delete_movimiento({id: m.id})}}>delete</i>
+                  </div>
+                  {e.movimientos.length>0 &&
+                    <div className="detalle_resumen_tag">
+                      {e.movimientos.map((m,index)=>(
+                        <div className="contenedor_movimiento">
+                          <div className="movimiento" key={index}>
+                            <label>{m.fecha}</label>
+                            <label>{m.description}</label>
+                            <label>Q. {cast_money({amount: m.amount})}</label>
+                            
                           </div>
-                        ))}
-                      </div>
-                    }
-                </div>
-            )})}
-            
-        </div>
+                          <i className="material-icons-outlined btn_delete_move" onClick={()=>{delete_movimiento({id: m.id})}}>delete</i>
+                        </div>
+                      ))}
+                    </div>
+                  }
+              </div>
+          )})}
+          
+      </div>
     );
 }
 
