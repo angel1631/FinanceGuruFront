@@ -7,7 +7,7 @@ import { AddMovimiento } from "./agregar_movimiento";
 import { cast_money } from "../../Core/scripts/casts";
 import { getContrast } from "../../Core/scripts/color";
 import { useRouter } from 'next/router';
-import { toast } from "../../Core/scripts/alerts";
+import { errorAlert, successAlert } from "../../Core/scripts/alerts";
 
 
 export async function server_props(context){
@@ -96,15 +96,19 @@ export default function main({server_props}){
       
       grafica();
     },[resumen])
-    async function get_resumen(){
-      let now = new Date();
-      let start = (new Date(now.getFullYear(), now.getMonth(), 1)).toISOString();
-      let end = (new Date(now.getFullYear(), now.getMonth()+1,0)).toISOString();
-      if(fechas[0]?.start && fechas[0]?.end){
-        start = new Date(fechas[0].start).toISOString();
-        end = new Date(fechas[0].end).toISOString()
+    async function get_resumen(start='',end=''){
+      if(start && end){
+        start = new Date(start).toISOString();
+        end = new Date(end).toISOString();
+      }else{
+        let now = new Date();
+        start = (new Date(now.getFullYear(), now.getMonth(), 1)).toISOString();
+        end = (new Date(now.getFullYear(), now.getMonth()+1,0)).toISOString();
+        if(fechas[0]?.start && fechas[0]?.end){
+          start = new Date(fechas[0].start).toISOString();
+          end = new Date(fechas[0].end).toISOString()
+        }
       }
-        
         //let start = `${now.getFullYear()}-${((now.getMonth())+1)<10?"0"+((now.getMonth())+1):((now.getMonth())+1)}-01`;
       let data = {start,end};
       const resumen_clasificacion = await communication({url:`/api/FinanceGuru/Services/resumen_movimientos`, data});
@@ -158,11 +162,11 @@ export default function main({server_props}){
           if(window.confirm("Esta seguro de eliminar el gasto")){
               let response = await communication({url: "/api/FinanceGuru/FGMovimiento/delete", data: {id}});
               if(response.cod == 0) throw response.message
-              toast("Todo Ok");
+              successAlert("Todo Ok");
               get_resumen();
           }
       }catch(err){
-          toast(err);
+          errorAlert(err);
       }
     }
     function change_fecha(e,id){
@@ -177,17 +181,18 @@ export default function main({server_props}){
         start_date = new Date(now.getFullYear(), now.getMonth(), 1);
         end_date = new Date(now.getFullYear(), now.getMonth()+1,0);
         selected_date[1]('current');
-        get_resumen();
+        
       }else if(month=='last'){
         start_date = new Date(now.getFullYear(), now.getMonth()-1, 1);
         end_date = new Date(now.getFullYear(), now.getMonth(),0);
         selected_date[1]('last');
-        get_resumen();
+        
       }
       
       fechas[1]({start: start_date.getFullYear()+"-"+(("0" + (start_date.getMonth() + 1)).slice(-2))+"-"+(("0" + start_date.getDate()).slice(-2)) , 
         end: end_date.getFullYear()+"-"+(("0" + (end_date.getMonth() + 1)).slice(-2))+"-"+(("0" + end_date.getDate()).slice(-2)) });
-    }
+        get_resumen(start_date.getFullYear()+"-"+(("0" + (start_date.getMonth() + 1)).slice(-2))+"-"+(("0" + start_date.getDate()).slice(-2)), end_date.getFullYear()+"-"+(("0" + (end_date.getMonth() + 1)).slice(-2))+"-"+(("0" + end_date.getDate()).slice(-2)));
+      }
     return (
         <div>
           {show_form_movimientos[0] && 

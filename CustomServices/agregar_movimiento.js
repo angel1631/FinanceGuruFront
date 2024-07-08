@@ -7,7 +7,7 @@ import { validate_form } from "../../Core/scripts/form.js";
 import { cast_money } from "../../Core/scripts/casts.js";
 import { getContrast } from "../../Core/scripts/color.js";
 import { GMoney } from "../../Core/components/GMoney.js";
-import { toast } from "../../Core/scripts/alerts.js";
+import { errorAlert, successAlert } from "../../Core/scripts/alerts.js";
 
 
 
@@ -39,6 +39,10 @@ function AddMovimiento({after_save}){
     let classification_form_action = useState('insert');
     let classification_id = useState();
     let classification_default_values = useState({});
+
+    let account_form_action = useState('insert');
+    let account_id = useState();
+    let account_default_values = useState({});
 
     useEffect(()=>{
         get_account_scheme();
@@ -98,10 +102,10 @@ function AddMovimiento({after_save}){
             let respuesta_json = await communication({url, data: account_values[0]});
             accounts[1]([...accounts[0],{...account_values[0],id: respuesta_json.id}]);
             show_form_account[1](false);
-            toast("Todo Ok");
+            successAlert("Todo Ok");
         }catch(err){
             
-            console.log(err); toast(err.message);
+            console.log(err); errorAlert(err.message);
         }
         
     }
@@ -113,10 +117,10 @@ function AddMovimiento({after_save}){
             let respuesta_json = await communication({url, data: tag_values[0]});
             tags[1]([...tags[0],{...tag_values[0],id: respuesta_json.id}]);
             show_form_tag[1](false);
-            toast("Todo Ok");
+            successAlert("Todo Ok");
             
         }catch(err){
-            console.log(err); toast(err.message);
+            console.log(err); errorAlert(err.message);
         } 
     }
     async function update_tag(){
@@ -126,10 +130,10 @@ function AddMovimiento({after_save}){
             let respuesta_json = await communication({url, data: tag_values[0]});
             show_form_tag[1](false);
             tags[1](tags[0].map((tag)=>{if(tag.id==tag_values[0].id)return tag_values[0]; else return tag}));
-            toast("Todo Ok");
+            successAlert("Todo Ok");
             
         }catch(err){
-            console.log(err); toast(err.message);
+            console.log(err); errorAlert(err.message);
         } 
     }
     async function save_new_classification(){
@@ -139,10 +143,10 @@ function AddMovimiento({after_save}){
             let respuesta_json = await communication({url, data: classification_values[0]});
             classifications[1]([...classifications[0],{...classification_values[0],id: respuesta_json.id}]);
             show_form_classification[1](false);
-            toast("Todo Ok");
+            successAlert("Todo Ok");
             
         }catch(err){
-            console.log(err); toast(err.message);
+            console.log(err); errorAlert(err.message);
         } 
     }
     async function update_classification(){
@@ -152,10 +156,10 @@ function AddMovimiento({after_save}){
             let respuesta_json = await communication({url, data: classification_values[0]});
             show_form_classification[1](false);
             classifications[1](classifications[0].map((classification)=>{if(classification.id==classification_values[0].id)return classification_values[0]; else return classification}));
-            toast("Todo Ok");
+            successAlert("Todo Ok");
             
         }catch(err){
-            console.log(err); toast(err.message);
+            console.log(err); errorAlert(err.message);
         } 
     }
     async function save_movimiento(){
@@ -168,11 +172,11 @@ function AddMovimiento({after_save}){
             if(!movimiento.classification) movimiento.classification = classifications[0][0].id; 
             let url = '/api/FinanceGuru/Services/save_movimiento';
             let respuesta_json = await communication({url, data: movimiento});
-            toast(respuesta_json.message);
+            successAlert(respuesta_json.message);
             after_save();
         }catch(err){
             console.log("---error al guardar",err);
-            toast(err);
+            errorAlert(err);
         }
         
         
@@ -210,11 +214,11 @@ function AddMovimiento({after_save}){
             if(window.confirm("Esta seguro de eliminar el centro de costos, esto eliminara todos los gastos asociados a este centro de costos")){
                 let response = await communication({url: "/api/FinanceGuru/FGClassification/delete", data: {id}});
                 if(response.cod == 0) throw response.message
-                toast("Todo Ok");
+                successAlert("Todo Ok");
                 get_classifications();
             }
         }catch(err){
-            toast(err);
+            errorAlert(err);
         }
     }
     async function delete_tag({id}){
@@ -222,11 +226,11 @@ function AddMovimiento({after_save}){
             if(window.confirm("Esta seguro de eliminar el Tipo de gasto, esto eliminara todos los gastos asociados a este tipo de gasto")){
                 let response = await communication({url: "/api/FinanceGuru/FGTag/delete", data: {id}});
                 if(response.cod == 0) throw response.message
-                toast("Todo Ok");
+                successAlert("Todo Ok");
                 get_tags();
             }
         }catch(err){
-            toast(err);
+            errorAlert(err);
         }
     }
     return (
@@ -248,9 +252,9 @@ function AddMovimiento({after_save}){
                             if(contraste>4) new_style.color = "#FFFFFF";
                             return (
                                 <div className="option_container">
-                                    <div className={`tag_container option ${mov_value[0].tag==e.id?'active':''}`} style={new_style} id={e.id} onClick={()=>{select_tag(e.id)}} >
-                                        <div className="tag_icon"><i  className="material-icons-outlined">{e.icon}</i></div>
-                                        <div className="tag_title">{e.title}</div>
+                                    <div className={`tag_container option`} id={e.id} onClick={()=>{select_tag(e.id)}} >
+                                        <div className="tag_icon icon" style={new_style}><i  className="material-icons-outlined">{e.icon}</i></div>
+                                        <div className={`tag_title title  ${mov_value[0].tag==e.id?'active':''}`}>{e.title}</div>
                                     </div>
                                     <div className="settings">
                                         <i className="material-icons">settings</i>
@@ -300,11 +304,15 @@ function AddMovimiento({after_save}){
                                 </div>
                             </div>
                             <div className="container_options">
-                                {classifications[0] && classifications[0].map((e)=>(
-                                    <div className="option_container">
-                                        <div className={`classification_container option ${mov_value[0].classification==e.id?'active':''}`} id={e.id} onClick={()=>{select_classification(e.id)}} >
-                                            <div className="tag_icon"><i style={{color: e.color}} className="material-icons">{e.icon}</i></div>
-                                            <div className="tag_title">{e.title}</div>
+                                {classifications[0] && classifications[0].map((e)=>{
+                                    let contraste = getContrast(e.color, '#FFFFFF');
+                                    let new_style = {background: e.color};
+                                    if(contraste>4) new_style.color = "#FFFFFF";
+                                    
+                                    return (<div className="option_container">
+                                        <div className={`option `} id={e.id} onClick={()=>{select_classification(e.id)}} >
+                                            <div className=" icon" style={new_style} ><i className="material-icons">{e.icon}</i></div>
+                                            <div className={` title  ${mov_value[0].classification==e.id?'active':''}`}>{e.title}</div>
                                         </div> 
                                         <div className="settings">
                                             <i className="material-icons">settings</i>
@@ -318,12 +326,12 @@ function AddMovimiento({after_save}){
                                                 }}>Modify</div>
                                             </div>
                                         </div>
-                                    </div>   
-                                ))}
+                                    </div>);   
+                                })}
                             </div>
                             
                         </div>
-                        <div className="accounts_container move_container">
+                        <div className=" move_container">
                             <div className="container_title">
                                 <div>Con que pagará? </div>
                                 <div className="add_btn button btn-sm bg-add sm-circle-btn" onClick={()=>{show_form_account[1](true);}}>
@@ -332,12 +340,34 @@ function AddMovimiento({after_save}){
                                 </div>
                             </div>
                             <div className="container_options">
-                                {accounts[0] && accounts[0].map((e)=>(
+                                {accounts[0] && accounts[0].map((e)=>{
                                     <div className={`account_container ${mov_value[0].account==e.id?'active':''}`} id={e.id} onClick={()=>{select_account(e.id)}} >
                                         <div className="account_title">{e.title}</div>
                                         <div className="account_icon"><i className="material-icons-outlined" style={{color: e.color}} >{e.icon}</i></div>
                                     </div>    
-                                ))}
+                                    let contraste = getContrast(e.color, '#FFFFFF');
+                                    let new_style = {background: e.color};
+                                    if(contraste>4) new_style.color = "#FFFFFF";
+                                    
+                                    return (<div className="option_container">
+                                        <div className={`option `} id={e.id} onClick={()=>{select_account(e.id)}} >
+                                            <div className="icon" style={new_style} ><i className="material-icons">{e.icon}</i></div>
+                                            <div className={` title  ${mov_value[0].account==e.id?'active':''}`}>{e.title}</div>
+                                        </div> 
+                                        <div className="settings">
+                                            <i className="material-icons">settings</i>
+                                            <div className="tooltip">
+                                                <div onClick={()=>{delete_account({id: e.id})}}>Delete</div>
+                                                <div onClick={()=>{
+                                                    show_form_account[1](true);
+                                                    account_default_values[1](e);
+                                                    account_form_action[1]('update');
+                                                    account_id[1](e.id);
+                                                }}>Modify</div>
+                                            </div>
+                                        </div>
+                                    </div>);
+                                })}
                             </div>
                             
                         </div>
@@ -393,7 +423,7 @@ function AddMovimiento({after_save}){
                     values={classification_values}
                     onSubmit={classification_form_action[0]=='insert'?save_new_classification:update_classification} 
                     action={classification_form_action[0]}
-                    primary_action={classification_form_action[0]}
+                    primary_action={claoption_conssification_form_action[0]}
                     PRIMARY_ID={classification_id[0]}
                     values_base={classification_default_values[0]}
                     />
@@ -401,7 +431,7 @@ function AddMovimiento({after_save}){
             </GModal>
         }
         </>
-    );
+    );option_con
 }
 
  
