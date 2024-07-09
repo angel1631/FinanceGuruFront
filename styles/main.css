@@ -99,3 +99,6 @@
 .active_date{
     border-bottom: 3px solid var(--accent-color);
 }
+.alert_container{
+    z-index: 1102;
+}

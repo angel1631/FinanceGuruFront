@@ -1,5 +1,5 @@
 .movimientos_container .save_move{
-    margin-top: 3rem;
+    
     background: var(--primary-background);
     color: white;
 }
@@ -9,7 +9,6 @@
     flex-direction: column;
     width: 100%;
     margin-top: 2rem;
-   
     overflow: hidden;
 }
 .move_container .container_title{
@@ -145,7 +144,6 @@
 }
 .monto_container{
     margin-top: 3rem;
-    display: flex;
     justify-content: space-around;
     font-size: 1.4rem;
 }
@@ -235,9 +233,17 @@
 }
 
 
-@media (min-width: 1280px)  {
+@media (min-width: 1025px)  {
     .move_container .container_options{
         grid-template-columns: 1fr 1fr;
+    }
+    .monto_container{
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+    }
+    .monto_container .description_input_line{
+        grid-column-start: 1;
+        grid-column-end: 3;
     }
 }
 @keyframes pulse {

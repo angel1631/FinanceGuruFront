@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { communication } from "../../Core/scripts/communication.js";
 import { GCard } from "../../Core/components/GCard.js";
 import { GModal } from "../../Core/components/GModal.js";
@@ -11,25 +11,31 @@ import { errorAlert, successAlert } from "../../Core/scripts/alerts.js";
 
 
 
-function AddMovimiento({after_save}){
-    let values = useState({});
+function AddMovimiento({after_save, initial_props}){
+    //initial_props = [{...initial_props[0]}];
+    //console.log("---------initial props", initial_props);
+    if(!initial_props[0].accounts || !initial_props[0].tags || !initial_props[0].classifications || !initial_props[0].tag_scheme || !initial_props[0].classification_scheme || !initial_props[0].account_scheme ){
+        errorAlert("Fallo la precarga del componenete agregar movimiento, comunicate con el administrador");
+    }
     let show_form_account = useState(false);
     let show_form_tag = useState(false);
     let show_form_classification = useState(false);
-    let account_scheme = useState({});
-    let tag_scheme = useState({});
+
+ 
     let tag_values = useState({});
-    let classification_scheme = useState({});
     let classification_values = useState({});
     let account_values = useState({});
-    let accounts = useState([]);
-    let tags = useState([]);
-    let classifications = useState([]);
     let now = new Date();
     let day = ("0" + now.getDate()).slice(-2);
     let month = ("0" + (now.getMonth() + 1)).slice(-2);
 
-    let mov_value = useState({description:'',amount:'', account:'', tag:'', fecha:now.getFullYear()+"-"+(month)+"-"+(day)});
+    let mov_value = useState(
+        {description:'',
+            amount:'', 
+            account:initial_props[0].accounts[0].id, 
+            tag:'',
+            classification: initial_props[0].classifications[0].id, 
+            fecha:now.getFullYear()+"-"+(month)+"-"+(day)});
     let show_first_account = useState(true);
     let tag_form_action = useState('insert');
     let tag_id = useState();
@@ -43,64 +49,14 @@ function AddMovimiento({after_save}){
     let account_form_action = useState('insert');
     let account_id = useState();
     let account_default_values = useState({});
-
-    useEffect(()=>{
-        get_account_scheme();
-        get_tag_scheme();
-        get_classification_scheme();
-        get_accounts();
-        get_classifications();
-        get_tags();
-    },[]);
-    async function get_accounts(){
-        const data = await communication({url:`/api/FinanceGuru/Services/user_accounts`});
-        if(data.length==0) show_form_account[1](true);
-        accounts[1](data);
-        mov_value[1](prev_value=>({...prev_value, account: data[0].id}));
-    }
-    async function get_classifications(){
-        const data = await communication({url:`/api/FinanceGuru/Services/user_classifications`});
-        classifications[1](data);
-        mov_value[1]((prev_value)=>({...prev_value, classification: data[0].id}));
-    }
-    async function get_tags(){
-        const data = await communication({url:`/api/FinanceGuru/Services/user_tags?expense=si`});
-        tags[1](data);
-    }
-    async function get_account_scheme(){
-        try{
-            let scheme_json = await communication({url:`/api/FinanceGuru/FGCuenta/scheme`});
-            console.log("----scheme_json", scheme_json);
-            account_scheme[1](scheme_json)
-        }catch(error){
-            console.log("Error en api", error);
-        }
-    }
-    async function get_tag_scheme(){
-        try{
-            let scheme_json = await communication({url:`/api/FinanceGuru/FGTag/scheme`});
-            console.log("----scheme_json", scheme_json);
-            tag_scheme[1](scheme_json)
-        }catch(error){
-            console.log("Error en api", error);
-        }
-    }
-    async function get_classification_scheme(){
-        try{
-            let scheme_json = await communication({url:`/api/FinanceGuru/FGClassification/scheme`});
-            console.log("----scheme_json", scheme_json);
-            classification_scheme[1](scheme_json)
-        }catch(error){
-            console.log("Error en api", error);
-        }
-    }
     
     async function save_new_account(){
         try{
-            await validate_form(account_values[0], account_scheme[0].fields);
+            await validate_form(account_values[0], initial_props[0].account_scheme.fields);
             let url = '/api/FinanceGuru/FGCuenta/insert';
             let respuesta_json = await communication({url, data: account_values[0]});
-            accounts[1]([...accounts[0],{...account_values[0],id: respuesta_json.id}]);
+            let new_accounts = [...initial_props[0].accounts, {...account_values[0],id: respuesta_json.id}];
+            initial_props[1]({...initial_props[0], accounts: new_accounts});
             show_form_account[1](false);
             successAlert("Todo Ok");
         }catch(err){
@@ -112,10 +68,10 @@ function AddMovimiento({after_save}){
     
     async function save_new_tag(){
         try{
-            await validate_form(tag_values[0], tag_scheme[0].fields);
+            await validate_form(tag_values[0], initial_props[0].tag_scheme.fields);
             let url = '/api/FinanceGuru/FGTag/insert';
             let respuesta_json = await communication({url, data: tag_values[0]});
-            tags[1]([...tags[0],{...tag_values[0],id: respuesta_json.id}]);
+            add_initial_props({...tag_values[0],id: respuesta_json.id},'tags');
             show_form_tag[1](false);
             successAlert("Todo Ok");
             
@@ -125,11 +81,12 @@ function AddMovimiento({after_save}){
     }
     async function update_tag(){
         try{
-            await validate_form(tag_values[0], tag_scheme[0].fields);
+            await validate_form(tag_values[0], initial_props[0].tag_scheme.fields);
             let url = '/api/FinanceGuru/FGTag/update';
             let respuesta_json = await communication({url, data: tag_values[0]});
             show_form_tag[1](false);
-            tags[1](tags[0].map((tag)=>{if(tag.id==tag_values[0].id)return tag_values[0]; else return tag}));
+            
+            initial_props[1]({...initial_props[0], tags: initial_props[0].tags.map((tag)=>{if(tag.id==tag_values[0].id)return tag_values[0]; else return tag})});
             successAlert("Todo Ok");
             
         }catch(err){
@@ -138,10 +95,10 @@ function AddMovimiento({after_save}){
     }
     async function save_new_classification(){
         try{
-            await validate_form(classification_values[0], classification_scheme[0].fields);
+            await validate_form(classification_values[0], initial_props[0].classification_scheme.fields);
             let url = '/api/FinanceGuru/FGClassification/insert';
             let respuesta_json = await communication({url, data: classification_values[0]});
-            classifications[1]([...classifications[0],{...classification_values[0],id: respuesta_json.id}]);
+            add_initial_props({...classification_values[0],id: respuesta_json.id},'classifications');
             show_form_classification[1](false);
             successAlert("Todo Ok");
             
@@ -151,17 +108,21 @@ function AddMovimiento({after_save}){
     }
     async function update_classification(){
         try{
-            await validate_form(classification_values[0], classification_scheme[0].fields);
+            await validate_form(classification_values[0], initial_props[0].classification_scheme.fields);
             let url = '/api/FinanceGuru/FGClassification/update';
             let respuesta_json = await communication({url, data: classification_values[0]});
             show_form_classification[1](false);
-            classifications[1](classifications[0].map((classification)=>{if(classification.id==classification_values[0].id)return classification_values[0]; else return classification}));
+            initial_props[1]({...initial_props[0], classifications: initial_props[0].classifications.map((classification)=>{if(classification.id==classification_values[0].id)return classification_values[0]; else return classification})});
             successAlert("Todo Ok");
             
         }catch(err){
             console.log(err); errorAlert(err.message);
         } 
     }
+    function add_initial_props(new_value,group){
+        initial_props[1]({...initial_props[0], [group]: [...initial_props[0][group], new_value]});
+    }
+    
     async function save_movimiento(){
         
         try{
@@ -169,10 +130,10 @@ function AddMovimiento({after_save}){
             if(mov_value[0].account==''){throw {message: 'Se debe seleccionar una cuenta'};} 
             if(mov_value[0].tag=='') throw {meesage: 'Se debe seleccionar una clasificacion'};
             let movimiento = {...mov_value[0], is_debit:'si'};
-            if(!movimiento.classification) movimiento.classification = classifications[0][0].id; 
+            if(!movimiento.classification) movimiento.classification = initial_props[0].classifications[0].id; 
             let url = '/api/FinanceGuru/Services/save_movimiento';
             let respuesta_json = await communication({url, data: movimiento});
-            successAlert(respuesta_json.message);
+            
             after_save();
         }catch(err){
             console.log("---error al guardar",err);
@@ -215,7 +176,7 @@ function AddMovimiento({after_save}){
                 let response = await communication({url: "/api/FinanceGuru/FGClassification/delete", data: {id}});
                 if(response.cod == 0) throw response.message
                 successAlert("Todo Ok");
-                get_classifications();
+                initial_props[1]({...initial_props[0], classifications: initial_props[0].classifications.filter(classification=>(classification.id!=id))});
             }
         }catch(err){
             errorAlert(err);
@@ -227,7 +188,8 @@ function AddMovimiento({after_save}){
                 let response = await communication({url: "/api/FinanceGuru/FGTag/delete", data: {id}});
                 if(response.cod == 0) throw response.message
                 successAlert("Todo Ok");
-                get_tags();
+                initial_props[1]({...initial_props[0], tags: initial_props[0].tags.filter(tag=>(tag.id!=id))});
+                
             }
         }catch(err){
             errorAlert(err);
@@ -238,6 +200,7 @@ function AddMovimiento({after_save}){
         {
         
             <GCard className="movimientos_container">
+                
                 <div className="tags_container  move_container">
                     <div className="container_title">
                         <div>Que tipo de gasto desea reportar? </div>
@@ -246,12 +209,12 @@ function AddMovimiento({after_save}){
                         </div>
                     </div>
                     <div className="container_options">
-                        {tags[0] && tags[0].map((e)=>{
+                        {initial_props[0]?.tags?.map((e, tag_index)=>{
                             let contraste = getContrast(e.color, '#FFFFFF');
                             let new_style = {background: e.color};
                             if(contraste>4) new_style.color = "#FFFFFF";
                             return (
-                                <div className="option_container">
+                                <div className="option_container" key={tag_index}>
                                     <div className={`tag_container option`} id={e.id} onClick={()=>{select_tag(e.id)}} >
                                         <div className="tag_icon icon" style={new_style}><i  className="material-icons-outlined">{e.icon}</i></div>
                                         <div className={`tag_title title  ${mov_value[0].tag==e.id?'active':''}`}>{e.title}</div>
@@ -284,7 +247,7 @@ function AddMovimiento({after_save}){
                         <input type="date" id="fecha" value={mov_value[0].fecha} onChange={(e)=>{onChange('fecha', e.target.value)}}/> 
                         <label htmlFor="fecha" className="field-description">Fecha que realizo el gasto</label>
                     </div>
-                    <div className="gform-line">
+                    <div className="gform-line description_input_line">
                         <textarea type="text" id="description" value={mov_value[0].description} onChange={(e)=>{onChange('description', e.target.value)}}/>
                         <label htmlFor="description" className="field-description">Detallar el gasto</label>
                     </div>
@@ -304,7 +267,7 @@ function AddMovimiento({after_save}){
                                 </div>
                             </div>
                             <div className="container_options">
-                                {classifications[0] && classifications[0].map((e)=>{
+                                {initial_props[0]?.classifications?.map((e)=>{
                                     let contraste = getContrast(e.color, '#FFFFFF');
                                     let new_style = {background: e.color};
                                     if(contraste>4) new_style.color = "#FFFFFF";
@@ -340,7 +303,7 @@ function AddMovimiento({after_save}){
                                 </div>
                             </div>
                             <div className="container_options">
-                                {accounts[0] && accounts[0].map((e)=>{
+                                {initial_props[0].accounts?.map((e)=>{
                                     <div className={`account_container ${mov_value[0].account==e.id?'active':''}`} id={e.id} onClick={()=>{select_account(e.id)}} >
                                         <div className="account_title">{e.title}</div>
                                         <div className="account_icon"><i className="material-icons-outlined" style={{color: e.color}} >{e.icon}</i></div>
@@ -387,7 +350,7 @@ function AddMovimiento({after_save}){
         {show_form_account[0] &&
             <GModal show={show_form_account} title={`Agregar Cuenta`}>
                 <GForm 
-                    scheme={account_scheme[0]} 
+                    scheme={initial_props[0].account_scheme} 
                     values={account_values}
                     onSubmit={save_new_account} 
                     action={'insert'}
@@ -407,7 +370,7 @@ function AddMovimiento({after_save}){
         {show_form_tag[0] &&
             <GModal show={show_form_tag} title={`Agregar Tipo de Gasto`}>
                 <GForm 
-                    scheme={tag_scheme[0]} 
+                    scheme={initial_props[0].tag_scheme} 
                     values={tag_values}
                     onSubmit={tag_form_action[0]=='insert'?save_new_tag:update_tag} 
                     action={tag_form_action[0]}
@@ -419,11 +382,11 @@ function AddMovimiento({after_save}){
         {show_form_classification[0] &&
             <GModal show={show_form_classification} title={`Agregar Centro de Costos`}>
                 <GForm 
-                    scheme={classification_scheme[0]} 
+                    scheme={initial_props[0].classification_scheme} 
                     values={classification_values}
                     onSubmit={classification_form_action[0]=='insert'?save_new_classification:update_classification} 
                     action={classification_form_action[0]}
-                    primary_action={claoption_conssification_form_action[0]}
+                    primary_action={classification_form_action[0]}
                     PRIMARY_ID={classification_id[0]}
                     values_base={classification_default_values[0]}
                     />
@@ -431,7 +394,7 @@ function AddMovimiento({after_save}){
             </GModal>
         }
         </>
-    );option_con
+    );
 }
 
  
