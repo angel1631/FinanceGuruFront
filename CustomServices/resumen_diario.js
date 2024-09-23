@@ -54,7 +54,7 @@ export default function resumen_diario({server_props}){
   let show_form_movimientos = useState(false);
   let show_fechas = useState(false);
   let selected_date = useState('current');
-  
+  const months = ['Jan', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dec'];  
   let add_move_initial_props = useState({});
   async function preload_add_move_page(){
     try{
@@ -86,7 +86,7 @@ export default function resumen_diario({server_props}){
       var options = {
         xAxis: {
             type: 'category',
-            data: resumen[0].map(r=>r.fecha+"a".substring(4))
+            data: resumen[0].map(r=>(mounts[parseInt((r.fecha).substring(5,7))]+r.fecha.substring(7,10)))
         },
             yAxis: {
             type: 'value'
@@ -262,7 +262,7 @@ export default function resumen_diario({server_props}){
               return (
                 <div className="resumen_tag" style={new_style} key={index_a}>
                     <div className="head_resumen_tag">
-                      <label className="info title">{e.fecha.substring(4)}</label>
+                      <label className="info title">{e.fecha.substring(5)}</label>
                       <label className="info balance">Q. {cast_money({amount:e.balance})}</label>
                       <div className="expandir" onClick={(c)=>{cargar_movimientos(e.fecha,c)}}>
                         <i className="material-icons-outlined icon_movimientos">arrow_drop_down</i>
