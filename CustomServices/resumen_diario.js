@@ -86,7 +86,7 @@ export default function resumen_diario({server_props}){
       var options = {
         xAxis: {
             type: 'category',
-            data: resumen[0].map(r=>r.fecha)
+            data: resumen[0].map(r=>r.fecha+"".substring(4))
         },
             yAxis: {
             type: 'value'
