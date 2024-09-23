@@ -262,7 +262,7 @@ export default function resumen_diario({server_props}){
               return (
                 <div className="resumen_tag" style={new_style} key={index_a}>
                     <div className="head_resumen_tag">
-                      <label className="info title">{e.fecha}</label>
+                      <label className="info title">{e.fecha.substring(4)}</label>
                       <label className="info balance">Q. {cast_money({amount:e.balance})}</label>
                       <div className="expandir" onClick={(c)=>{cargar_movimientos(e.fecha,c)}}>
                         <i className="material-icons-outlined icon_movimientos">arrow_drop_down</i>
