@@ -61,7 +61,7 @@ export default function main({server_props}){
     try{
       let [accounts, classifications, tags, account_scheme, classification_scheme, tag_scheme, resumen] = await Promise.all([
         
-        useCommunication({url:`/api/FinanceGuru/Services/user_accounts`}),
+        communication({url:`/api/FinanceGuru/Services/user_accounts`}),
         communication({url:`/api/FinanceGuru/Services/user_classifications`}),
         communication({url:`/api/FinanceGuru/Services/user_tags?expense=si`}),
         communication({url:`/api/FinanceGuru/FGCuenta/scheme`}),
