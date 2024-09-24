@@ -71,7 +71,7 @@ export default function main({server_props}){
         accounts, classifications, tags, account_scheme, classification_scheme, tag_scheme
       });
     }catch(err){
-      errorAlert(`Ocurrio un error al cargar la pagina comunicate con el administrador`);
+      errorAlert(`Ocurrio un error al cargar la pagina comunicate con el administrador (main)`);
     }finally{
       loading[1](false);
     }
