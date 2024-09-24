@@ -73,7 +73,8 @@ export default function main({server_props}){
         accounts, classifications, tags, account_scheme, classification_scheme, tag_scheme
       });
     }catch(err){
-      console.log("999999999999errror", err);
+      console.log("999999999999errror", err.message);
+      console.log("nnnnnnnnvalor token", err.message+"".toLowerCase().indexOf("token"));
       if(err.message+"".toLowerCase().indexOf("token")>=0){
         console.log("88888888888888 error, token no valido");
       }else{
