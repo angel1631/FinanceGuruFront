@@ -8,6 +8,7 @@ import { cast_money } from "../../Core/scripts/casts";
 import { getContrast } from "../../Core/scripts/color";
 import { useRouter } from 'next/router';
 import { errorAlert, successAlert } from "../../Core/scripts/alerts";
+import {useCommunication} from "../../Core/hooks/useCommunication";
 
 
 export async function server_props(context){
@@ -59,7 +60,8 @@ export default function main({server_props}){
   async function preload_add_move_page(){
     try{
       let [accounts, classifications, tags, account_scheme, classification_scheme, tag_scheme, resumen] = await Promise.all([
-        communication({url:`/api/FinanceGuru/Services/user_accounts`}),
+        
+        useCommunication({url:`/api/FinanceGuru/Services/user_accounts`}),
         communication({url:`/api/FinanceGuru/Services/user_classifications`}),
         communication({url:`/api/FinanceGuru/Services/user_tags?expense=si`}),
         communication({url:`/api/FinanceGuru/FGCuenta/scheme`}),
@@ -71,6 +73,11 @@ export default function main({server_props}){
         accounts, classifications, tags, account_scheme, classification_scheme, tag_scheme
       });
     }catch(err){
+      console.log("999999999999errror", err);
+      if(err+"".toLowerCase().indexOf("token")>=0){
+        console.log("88888888888888 error, token no valido");
+        
+      }
       errorAlert(`Ocurrio un error al cargar la pagina comunicate con el administrador (main)`);
     }finally{
       loading[1](false);
