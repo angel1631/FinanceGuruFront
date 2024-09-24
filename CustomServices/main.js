@@ -74,8 +74,8 @@ export default function main({server_props}){
       });
     }catch(err){
       console.log("999999999999errror", err.message);
-      console.log("nnnnnnnnvalor token", err.message+"".toLowerCase().indexOf("token"));
-      if(err.message+"".toLowerCase().indexOf("token")>=0){
+      console.log("nnnnnnnnvalor token", (err.message+"").toLowerCase().indexOf("token"));
+      if((err.message+"").toLowerCase().indexOf("token")>=0){
         console.log("88888888888888 error, token no valido");
       }else{
         errorAlert(`Ocurrio un error al cargar la pagina comunicate con el administrador (main)`);
