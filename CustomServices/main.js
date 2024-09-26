@@ -249,7 +249,7 @@ export default function main({server_props}){
       let today_date = now.getFullYear()+"-"+(("0" + (now.getMonth() + 1)).slice(-2))+"-"+(("0" + now.getDate()).slice(-2)); 
       fechas[1]({start: today_date, end: today_date});
       selected_date[1]('today');
-      get_resumen()
+      get_resumen(today_date,today_date);
     }
     return (
         <div>
