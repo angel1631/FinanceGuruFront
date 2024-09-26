@@ -34,15 +34,6 @@ export async function server_props(context){
 }
 
 export default function resumen_diario({server_props}){
-  /*console.log("------recargo main");
-  const router = useRouter();
-  if(server_props.error?.http_code ==401) router.push("/login");
-  if(server_props?.error?.http_code==403) return(<Error txt={"El usuario no tiene acceso al recurso"}/>);
-  */
-  
-  /*let resumen = useState(server_props.resumen?server_props.resumen.map(r=>({...r,movimientos:[]})):[]);
-  let total_resumen = useState(server_props.total_resumen);
-  */
   let resumen = useState([]);
   let loading = useState(true);
   let total_resumen = useState(0);
