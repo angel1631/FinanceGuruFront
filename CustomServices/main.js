@@ -244,6 +244,15 @@ export default function main({server_props}){
       end: end_date.getFullYear()+"-"+(("0" + (end_date.getMonth() + 1)).slice(-2))+"-"+(("0" + end_date.getDate()).slice(-2)) });
       get_resumen(start_date.getFullYear()+"-"+(("0" + (start_date.getMonth() + 1)).slice(-2))+"-"+(("0" + start_date.getDate()).slice(-2)), end_date.getFullYear()+"-"+(("0" + (end_date.getMonth() + 1)).slice(-2))+"-"+(("0" + end_date.getDate()).slice(-2)));
     }
+    function set_today(){
+      let now = new Date();
+      let today_date = now.getFullYear()+"-"+(("0" + (now.getMonth() + 1)).slice(-2))+"-"+(("0" + now.getDate()).slice(-2)); 
+      fechas[1]({
+        start: today_date,
+        end: today_date
+      });
+      get_resumen()
+    }
     return (
         <div>
           {loading[0] ?
@@ -273,6 +282,9 @@ export default function main({server_props}){
                   </div>
                   <div className={`gastos_mes_button date_menu_option ${selected_date[0]=='last'? 'active_date': ''}`} onClick={()=>{set_month('last');}}>
                     Gastos mes pasado
+                  </div>
+                  <div className={`gastos_mes_button date_menu_option ${selected_date[0]=='today'? 'active_date': ''}`} onClick={()=>{set_today();}}>
+                    Gastos de hoy
                   </div>
                   <div className="fechas_trigger date_menu_option" onClick={()=>{show_fechas[1](!show_fechas[0])}}>
                     Otra fecha <i className="material-icons-outlined">navigate_next</i>
