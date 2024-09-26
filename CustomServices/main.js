@@ -247,10 +247,8 @@ export default function main({server_props}){
     function set_today(){
       let now = new Date();
       let today_date = now.getFullYear()+"-"+(("0" + (now.getMonth() + 1)).slice(-2))+"-"+(("0" + now.getDate()).slice(-2)); 
-      fechas[1]({
-        start: today_date,
-        end: today_date
-      });
+      fechas[1]({start: today_date, end: today_date});
+      selected_date[1]('today');
       get_resumen()
     }
     return (
