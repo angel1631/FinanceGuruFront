@@ -46,6 +46,7 @@ export default function main({server_props}){
   */
   let resumen = useState([]);
   let loading = useState(true);
+  let is_ready = useState(false);
   let total_resumen = useState(0);
   let now = new Date();
   let start_date = new Date(now.getFullYear(), now.getMonth(), 1);
@@ -140,15 +141,22 @@ export default function main({server_props}){
   },[resumen]);
   useEffect(()=>{
     preload_add_move_page();
+    is_ready[1](true);
     // Uso:
-    const steps = [
-      { element: '#add_move_button', text: 'Bienvenidos al inicio' },
-      { element: '#add_move_button', text: 'Este es otro elemento' }
-    ];
-    const tour = new SimpleTour(steps);
-    tour.start();
-    console.log("En el dom esta", document.querySelector("#add_move_button"));
+    
   },[])
+  useEffect(()=>{
+    if(is_ready){
+      //activamos el tour
+      const steps = [
+        { element: '#add_move_button', text: 'Bienvenidos al inicio' },
+        { element: '#add_move_button', text: 'Este es otro elemento' }
+      ];
+      const tour = new SimpleTour(steps);
+      tour.start();
+      console.log("En el dom esta", document.querySelector("#add_move_button"));
+    }
+  },[is_ready])
 
   async function get_resumen(start='',end='', set_states = true){
     if(start && end){
