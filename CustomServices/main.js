@@ -140,6 +140,13 @@ export default function main({server_props}){
   },[resumen]);
   useEffect(()=>{
     preload_add_move_page();
+    // Uso:
+    const steps = [
+      { element: '#feature1', text: 'Esta es la característica 1' },
+      { element: '#feature2', text: 'Y esta es la característica 2' }
+    ];
+    const tour = new SimpleTour(steps);
+    tour.start();
   },[])
 
   async function get_resumen(start='',end='', set_states = true){
