@@ -146,14 +146,14 @@ export default function main({server_props}){
     
   },[])
   useEffect(()=>{
-    if(is_ready){
+    if(is_ready[0]){
       //activamos el tour
       const steps = [
         { element: '#add_move_button', text: 'Bienvenidos al inicio' },
         { element: '#add_move_button', text: 'Este es otro elemento' }
       ];
       const tour = new SimpleTour(steps);
-      tour.start();
+      //tour.start();
       console.log("En el dom esta", document.querySelector("#add_move_button"));
     }
   },[is_ready])
