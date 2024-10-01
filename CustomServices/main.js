@@ -142,11 +142,12 @@ export default function main({server_props}){
     preload_add_move_page();
     // Uso:
     const steps = [
-      { element: '.move_add_button', text: 'Bienvenidos al inicio' },
-      { element: '#feature2', text: 'Y esta es la característica 2' }
+      { element: '#add_move_button', text: 'Bienvenidos al inicio' },
+      { element: '#add_move_button', text: 'Este es otro elemento' }
     ];
     const tour = new SimpleTour(steps);
     tour.start();
+    console.log("En el dom esta", document.querySelector("#add_move_button"));
   },[])
 
   async function get_resumen(start='',end='', set_states = true){
@@ -271,7 +272,7 @@ export default function main({server_props}){
             }
             <GCard>
                 <div className="button_add_move_container">
-                <div className="move_add_button active_pulse" onClick={(e)=>{show_form_movimientos[1](true)}}>
+                <div id="add_move_button" className="move_add_button active_pulse" onClick={(e)=>{show_form_movimientos[1](true)}}>
                     Agregar un gasto
                 </div>
                 </div>
