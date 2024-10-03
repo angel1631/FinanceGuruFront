@@ -149,8 +149,19 @@ export default function main({server_props}){
     if(is_ready[0]){
       //activamos el tour
       const steps = [
-        { element: '#add_move_button', text: 'Bienvenidos al inicio' },
-        { element: '#add_move_button', text: 'Este es otro elemento' }
+        {element: '#add_move_button', text: 'Bienvenido a Finance Guru, Aqui podras llevar el control de tus gastos.' },
+        {element: '#add_move_button', text: 'Iniciemos reportando nuestro primer gasto' },
+        {element: '#tags_container', text: 'Ahora seleccionemos el tipo de gasto que deseas reportar'},
+        {element: '#amount', text: 'Aqui colocamos cuanto se pago'},
+        {element: '#fecha', text: 'Ahora coloquemos cuando se realizo el pago, por defecto colocara la fecha de hoy'},
+        {element: '#description', text: 'Aqui podremos describir mas el gasto, esto ayudara a recordarnos del por que el gasto'},
+        {element: '#save_move', text: 'Ahora guardemos el gasto'},
+        {element: '#grafica_resumen', text: 'Aqui se mostrara un resumen de los gastos reportados'},
+        {element: '#date_menu', text: 'Aqui podemos filtrar el rango de fechas que queremos ver, por defecto mostrara los gastos del mes actual'},
+        {element: '#resumen_gastos', text: 'Aqui podras ver el detalle de los gastos agrupados por tipo de gasto'},
+        {element: '.expandir', text: 'Si le damos click al boton de expandir, mostrara un detalle de todos los gastos que se reportaron de ese tipo'}
+
+
       ];
       const tour = new SimpleTour(steps);
       //tour.start();
@@ -290,7 +301,7 @@ export default function main({server_props}){
                 <div className="total_resumen_container">
                   <label>Q. {cast_money({amount: total_resumen[0]})}</label>
                 </div>
-                <div className="date_menu">
+                <div className="date_menu" id="date_menu">
                   <div className={`gastos_mes_button date_menu_option ${selected_date[0]=='current'? 'active_date': ''}`} onClick={()=>{set_month('current');}}>
                     Gastos del mes
                   </div>
@@ -314,37 +325,40 @@ export default function main({server_props}){
                 
                 
             </GCard>
-            {resumen[0].map((e,index_a)=>{
-              let contraste = getContrast(e.color, '#FFFFFF');
-              let new_style = {background: e.color};
-              if(contraste>4) new_style.color = "#FFFFFF";
-              return (
-                <div className="resumen_tag" style={new_style} key={index_a}>
-                    <div className="head_resumen_tag">
-                      <i className="info icon material-icons-outlined">{e.icon}</i>
-                      <label className="info title">{e.title}</label>
-                      <label className="info balance">Q. {cast_money({amount:e.balance})}</label>
-                      <div className="expandir" onClick={(c)=>{cargar_movimientos(e.id,c)}}>
-                        <i className="material-icons-outlined icon_movimientos">arrow_drop_down</i>
+            <GCard id="resumen_gastos">
+              {resumen[0].map((e,index_a)=>{
+                let contraste = getContrast(e.color, '#FFFFFF');
+                let new_style = {background: e.color};
+                if(contraste>4) new_style.color = "#FFFFFF";
+                return (
+                  <div className="resumen_tag" style={new_style} key={index_a}>
+                      <div className="head_resumen_tag">
+                        <i className="info icon material-icons-outlined">{e.icon}</i>
+                        <label className="info title">{e.title}</label>
+                        <label className="info balance">Q. {cast_money({amount:e.balance})}</label>
+                        <div className="expandir" onClick={(c)=>{cargar_movimientos(e.id,c)}}>
+                          <i className="material-icons-outlined icon_movimientos">arrow_drop_down</i>
+                        </div>
                       </div>
-                    </div>
-                    {e.movimientos.length>0 &&
-                      <div className="detalle_resumen_tag">
-                        {e.movimientos.map((m,index)=>(
-                          <div className="contenedor_movimiento">
-                            <div className="movimiento" key={index}>
-                              <label>{m.fecha}</label>
-                              <label>{m.description}</label>
-                              <label>Q. {cast_money({amount: m.amount})}</label>
-                              
+                      {e.movimientos.length>0 &&
+                        <div className="detalle_resumen_tag">
+                          {e.movimientos.map((m,index)=>(
+                            <div className="contenedor_movimiento">
+                              <div className="movimiento" key={index}>
+                                <label>{m.fecha}</label>
+                                <label>{m.description}</label>
+                                <label>Q. {cast_money({amount: m.amount})}</label>
+                                
+                              </div>
+                              <i className="material-icons-outlined btn_delete_move" onClick={()=>{delete_movimiento({id: m.id})}}>delete</i>
                             </div>
-                            <i className="material-icons-outlined btn_delete_move" onClick={()=>{delete_movimiento({id: m.id})}}>delete</i>
-                          </div>
-                        ))}
-                      </div>
-                    }
-                </div>
-            )})}
+                          ))}
+                        </div>
+                      }
+                  </div>
+              )})}
+            </GCard>
+            
              </>
           }
       </div>

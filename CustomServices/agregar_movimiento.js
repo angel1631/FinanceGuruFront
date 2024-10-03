@@ -208,7 +208,7 @@ function AddMovimiento({after_save, initial_props}){
                             Crear tipo de gasto
                         </div>
                     </div>
-                    <div className="container_options">
+                    <div className="container_options" id="tags_container">
                         {initial_props[0]?.tags?.map((e, tag_index)=>{
                             let contraste = getContrast(e.color, '#FFFFFF');
                             let new_style = {background: e.color};
@@ -255,7 +255,7 @@ function AddMovimiento({after_save, initial_props}){
                     
                 </div>
                 
-                <button className="send button save_move" onClick={save_movimiento}>Guardar</button>
+                <button className="send button save_move" id="save_move" onClick={save_movimiento}>Guardar</button>
                 {advanced_options[0] && 
                     <div className="advanced_options_container no_display">
                         <div className="cost_center_container move_container">
