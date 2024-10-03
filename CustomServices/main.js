@@ -44,6 +44,9 @@ export default function main({server_props}){
   /*let resumen = useState(server_props.resumen?server_props.resumen.map(r=>({...r,movimientos:[]})):[]);
   let total_resumen = useState(server_props.total_resumen);
   */
+
+  const tour = new SimpleTour(steps);
+  
   let resumen = useState([]);
   let loading = useState(true);
   let is_ready = useState(false);
@@ -163,7 +166,7 @@ export default function main({server_props}){
 
 
       ];
-      const tour = new SimpleTour(steps);
+      
       tour.start();
       console.log("En el dom esta", document.querySelector("#add_move_button"));
     }
