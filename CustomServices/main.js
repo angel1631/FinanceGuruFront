@@ -44,9 +44,23 @@ export default function main({server_props}){
   /*let resumen = useState(server_props.resumen?server_props.resumen.map(r=>({...r,movimientos:[]})):[]);
   let total_resumen = useState(server_props.total_resumen);
   */
+  const steps = [
+    {element: '#add_move_button', text: 'Bienvenido a Finance Guru, Aqui podras llevar el control de tus gastos.' },
+    {element: '#add_move_button', text: 'Iniciemos reportando nuestro primer gasto' },
+    {element: '#tags_container', text: 'Ahora seleccionemos el tipo de gasto que deseas reportar'},
+    {element: '#amount', text: 'Aqui colocamos cuanto se pago'},
+    {element: '#fecha', text: 'Ahora coloquemos cuando se realizo el pago, por defecto colocara la fecha de hoy'},
+    {element: '#description', text: 'Aqui podremos describir mas el gasto, esto ayudara a recordarnos del por que el gasto'},
+    {element: '#save_move', text: 'Ahora guardemos el gasto'},
+    {element: '#grafica_resumen', text: 'Aqui se mostrara un resumen de los gastos reportados'},
+    {element: '#date_menu', text: 'Aqui podemos filtrar el rango de fechas que queremos ver, por defecto mostrara los gastos del mes actual'},
+    {element: '#resumen_gastos', text: 'Aqui podras ver el detalle de los gastos agrupados por tipo de gasto'},
+    {element: '.expandir', text: 'Si le damos click al boton de expandir, mostrara un detalle de todos los gastos que se reportaron de ese tipo'}
 
+
+  ];
   const tour = new SimpleTour(steps);
-  
+
   let resumen = useState([]);
   let loading = useState(true);
   let is_ready = useState(false);
@@ -151,21 +165,7 @@ export default function main({server_props}){
   useEffect(()=>{
     if(is_ready[0]){
       //activamos el tour
-      const steps = [
-        {element: '#add_move_button', text: 'Bienvenido a Finance Guru, Aqui podras llevar el control de tus gastos.' },
-        {element: '#add_move_button', text: 'Iniciemos reportando nuestro primer gasto' },
-        {element: '#tags_container', text: 'Ahora seleccionemos el tipo de gasto que deseas reportar'},
-        {element: '#amount', text: 'Aqui colocamos cuanto se pago'},
-        {element: '#fecha', text: 'Ahora coloquemos cuando se realizo el pago, por defecto colocara la fecha de hoy'},
-        {element: '#description', text: 'Aqui podremos describir mas el gasto, esto ayudara a recordarnos del por que el gasto'},
-        {element: '#save_move', text: 'Ahora guardemos el gasto'},
-        {element: '#grafica_resumen', text: 'Aqui se mostrara un resumen de los gastos reportados'},
-        {element: '#date_menu', text: 'Aqui podemos filtrar el rango de fechas que queremos ver, por defecto mostrara los gastos del mes actual'},
-        {element: '#resumen_gastos', text: 'Aqui podras ver el detalle de los gastos agrupados por tipo de gasto'},
-        {element: '.expandir', text: 'Si le damos click al boton de expandir, mostrara un detalle de todos los gastos que se reportaron de ese tipo'}
-
-
-      ];
+      
       
       tour.start();
       console.log("En el dom esta", document.querySelector("#add_move_button"));
