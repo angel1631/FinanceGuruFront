@@ -164,7 +164,7 @@ export default function main({server_props}){
 
       ];
       const tour = new SimpleTour(steps);
-      //tour.start();
+      tour.start();
       console.log("En el dom esta", document.querySelector("#add_move_button"));
     }
   },[is_ready])
