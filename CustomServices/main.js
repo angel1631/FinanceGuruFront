@@ -44,22 +44,7 @@ export default function main({server_props}){
   /*let resumen = useState(server_props.resumen?server_props.resumen.map(r=>({...r,movimientos:[]})):[]);
   let total_resumen = useState(server_props.total_resumen);
   */
-  const steps = [
-    {element: '#add_move_button', text: 'Bienvenido a Finance Guru, Aqui podras llevar el control de tus gastos.' },
-    {element: '#add_move_button', text: 'Iniciemos reportando nuestro primer gasto' },
-    {element: '#tags_container', text: 'Ahora seleccionemos el tipo de gasto que deseas reportar'},
-    {element: '#amount', text: 'Aqui colocamos cuanto se pago'},
-    {element: '#fecha', text: 'Ahora coloquemos cuando se realizo el pago, por defecto colocara la fecha de hoy'},
-    {element: '#description', text: 'Aqui podremos describir mas el gasto, esto ayudara a recordarnos del por que el gasto'},
-    {element: '#save_move', text: 'Ahora guardemos el gasto'},
-    {element: '#grafica_resumen', text: 'Aqui se mostrara un resumen de los gastos reportados'},
-    {element: '#date_menu', text: 'Aqui podemos filtrar el rango de fechas que queremos ver, por defecto mostrara los gastos del mes actual'},
-    {element: '#resumen_gastos', text: 'Aqui podras ver el detalle de los gastos agrupados por tipo de gasto'},
-    {element: '.expandir', text: 'Si le damos click al boton de expandir, mostrara un detalle de todos los gastos que se reportaron de ese tipo'}
 
-
-  ];
-  const tour = new SimpleTour(steps);
 
   let resumen = useState([]);
   let loading = useState(true);
@@ -165,16 +150,89 @@ export default function main({server_props}){
   useEffect(()=>{
     if(is_ready[0]){
       //activamos el tour
-      
-      
+      const steps = [
+        {element: '#add_move_button', text: 'Bienvenido a Finance Guru, Aqui podras llevar el control de tus gastos.' },
+        {element: '#add_move_button', text: 'Iniciemos reportando nuestro primer gasto' },
+        {element: '#tags_container', text: 'Ahora seleccionemos el tipo de gasto que deseas reportar'},
+        {element: '#amount', text: 'Aqui colocamos cuanto se pago'},
+        {element: '#fecha', text: 'Ahora coloquemos cuando se realizo el pago, por defecto colocara la fecha de hoy'},
+        {element: '#description', text: 'Aqui podremos describir mas el gasto, esto ayudara a recordarnos del por que el gasto'},
+        {element: '#save_move', text: 'Ahora guardemos el gasto'},
+        {element: '#grafica_resumen', text: 'Aqui se mostrara un resumen de los gastos reportados'},
+        {element: '#date_menu', text: 'Aqui podemos filtrar el rango de fechas que queremos ver, por defecto mostrara los gastos del mes actual'},
+        {element: '#resumen_gastos', text: 'Aqui podras ver el detalle de los gastos agrupados por tipo de gasto'},
+        {element: '.expandir', text: 'Si le damos click al boton de expandir, mostrara un detalle de todos los gastos que se reportaron de ese tipo'}
+    
+    
+      ];
+      const tour = new Shepherd.Tour({
+        defaultStepOptions: {
+          cancelIcon: {
+            enabled: true
+          },
+          classes: 'class-1 class-2',
+          scrollTo: { behavior: 'smooth', block: 'center' }
+        }
+      });
+    
+      tour.addStep({
+        title: 'Bienvenido a Finance Guru',
+        text: 'Bienvenido a Finance Guru, Aqui podras llevar el control de tus gastos.',
+        attachTo: {
+          element: '#add_move_button',
+          on: 'bottom'
+        },
+        buttons: [
+          {
+            action() {
+              return this.back();
+            },
+            classes: 'shepherd-button-secondary',
+            text: 'Back'
+          },
+          {
+            action() {
+              return this.next();
+            },
+            text: 'Next'
+          }
+        ],
+        id: 'creating'
+      });
+
+      tour.addStep({
+        title: 'Bienvenido a Finance Guru',
+        text: 'Iniciemos reportando nuestro primer gasto',
+        attachTo: {
+          element: '#add_move_button',
+          on: 'bottom'
+        },
+        buttons: [
+          {
+            action() {
+              return this.back();
+            },
+            classes: 'shepherd-button-secondary',
+            text: 'Back'
+          },
+          {
+            action() {
+              return this.next();
+            },
+            text: 'Next'
+          }
+        ],
+        id: 'creating'
+      });
+    
       tour.start();
+
+      // termina
+      //tour.start();
       console.log("En el dom esta", document.querySelector("#add_move_button"));
     }
   },[is_ready])
-  function tourNextStep(){
-    console.log("------next step");
-    tour.nextStep();
-  }
+
   async function get_resumen(start='',end='', set_states = true){
     if(start && end){
       start = new Date(start).toISOString();
