@@ -165,13 +165,16 @@ export default function main({server_props}){
     
     
       ];
-      
+      window.tour = new SimpleTour(steps);
+
       // termina
-      //tour.start();
+      window.tour.start();
       console.log("En el dom esta", document.querySelector("#add_move_button"));
     }
   },[is_ready])
-
+  function tourNextStep(){
+    window.tour.nextStep();
+  }
   async function get_resumen(start='',end='', set_states = true){
     if(start && end){
       start = new Date(start).toISOString();
