@@ -171,7 +171,8 @@ export default function main({server_props}){
       console.log("En el dom esta", document.querySelector("#add_move_button"));
     }
   },[is_ready])
-  async function tourNextStep(){
+  function tourNextStep(){
+    console.log("------next step");
     tour.nextStep();
   }
   async function get_resumen(start='',end='', set_states = true){
