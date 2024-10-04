@@ -10,6 +10,7 @@ import { useRouter } from 'next/router';
 import { errorAlert, successAlert } from "../../Core/scripts/alerts";
 import {useCommunication} from "../../Core/hooks/useCommunication";
 import SimpleTour from "../../Core/scripts/tour";
+import Shepherd from 'shepherd.js';
 
 export async function server_props(context){
     try{
