@@ -10,7 +10,6 @@ import { useRouter } from 'next/router';
 import { errorAlert, successAlert } from "../../Core/scripts/alerts";
 import {useCommunication} from "../../Core/hooks/useCommunication";
 import SimpleTour from "../../Core/scripts/tour";
-import Shepherd from 'shepherd.js';
 
 export async function server_props(context){
     try{
@@ -166,68 +165,7 @@ export default function main({server_props}){
     
     
       ];
-      const tour = new Shepherd.Tour({
-        defaultStepOptions: {
-          cancelIcon: {
-            enabled: true
-          },
-          classes: 'class-1 class-2',
-          scrollTo: { behavior: 'smooth', block: 'center' }
-        }
-      });
-    
-      tour.addStep({
-        title: 'Bienvenido a Finance Guru',
-        text: 'Bienvenido a Finance Guru, Aqui podras llevar el control de tus gastos.',
-        attachTo: {
-          element: '#add_move_button',
-          on: 'bottom'
-        },
-        buttons: [
-          {
-            action() {
-              return this.back();
-            },
-            classes: 'shepherd-button-secondary',
-            text: 'Back'
-          },
-          {
-            action() {
-              return this.next();
-            },
-            text: 'Next'
-          }
-        ],
-        id: 'creating'
-      });
-
-      tour.addStep({
-        title: 'Bienvenido a Finance Guru',
-        text: 'Iniciemos reportando nuestro primer gasto',
-        attachTo: {
-          element: '#add_move_button',
-          on: 'bottom'
-        },
-        buttons: [
-          {
-            action() {
-              return this.back();
-            },
-            classes: 'shepherd-button-secondary',
-            text: 'Back'
-          },
-          {
-            action() {
-              return this.next();
-            },
-            text: 'Next'
-          }
-        ],
-        id: 'creating'
-      });
-    
-      tour.start();
-
+      
       // termina
       //tour.start();
       console.log("En el dom esta", document.querySelector("#add_move_button"));
