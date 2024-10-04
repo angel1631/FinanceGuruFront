@@ -167,7 +167,7 @@ export default function main({server_props}){
       //activamos el tour
       
       
-      //tour.start();
+      tour.start();
       console.log("En el dom esta", document.querySelector("#add_move_button"));
     }
   },[is_ready])
