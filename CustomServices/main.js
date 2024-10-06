@@ -165,10 +165,10 @@ export default function main({server_props}){
     
     
       ];
-      window.tour = new SimpleTour(steps);
+      //window.tour = new SimpleTour(steps);
 
       // termina
-      window.tour.start();
+      //window.tour.start();
       console.log("En el dom esta", document.querySelector("#add_move_button"));
     }
   },[is_ready])
