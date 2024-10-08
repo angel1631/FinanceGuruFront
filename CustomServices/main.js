@@ -190,19 +190,40 @@ export default function main({server_props}){
     }
       //let start = `${now.getFullYear()}-${((now.getMonth())+1)<10?"0"+((now.getMonth())+1):((now.getMonth())+1)}-01`;
     let data = {start,end};
-    const resumen_clasificacion = await communication({url:`/api/FinanceGuru/Services/resumen_movimientos`, data});
+    const transactions = await communication({url:`/api/FinanceGuru/Services/my_transactions`, data});
+    let resumen_clasificacion = await group_tag(transactions);
     let total = 0;
-    let resumen_f = resumen_clasificacion.map(r=>{
-      total += parseFloat(r.balance);
-      return {...r,movimientos:[]}
+
+    /* Me quede aqui me traigo todos los movimientos y los debo de agrupar por tag si estoy en la vista de agrupado por tag, tengo que hacer el
+    agrupado por día y agrupado por clasificacion */
+    resumen_clasificacion.map(r=>{
+      total += parseFloat(r.amount);
     });
     if(set_states){
-      resumen[1](resumen_f);
+      resumen[1](resumen_clasificacion);
       total_resumen[1](total);
     }else{
-      return {resumen: resumen_f, total_resumen:total}
+      return {resumen: resumen_clasificacion, total_resumen:total}
     }
     
+  }
+  
+  async function group_tag(transactions) {
+    let out = {};
+    transactions.map(t=>{
+      let transaction = {id: t.transactionId, fecha: t.fecha, description: t.description, amount: t.amount};
+      if(out[t.tagKey]){
+        out[t.tagKey].balance += parseFloat(t.amount);
+        out[t.tagKey].transactions.push(transaction);
+      }else{
+        out[t.tagKey] = {tagKey: t.tagKey, balance:parseFloat(t.amount), title: t.title, color: t.color, icon: t.icon, transactions: [transaction]}
+      }
+    });
+    out_f = []
+    Object.keys(out).map(ta=>{
+      out_f.push(out[ta]);
+    })
+    return out_f;
   }
 
   async function cargar_movimientos(id,el){
