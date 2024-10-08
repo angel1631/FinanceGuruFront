@@ -240,7 +240,7 @@ export default function main({server_props}){
       let respuesta_json = await communication({url, data: {TagId: id, start,end}});
       let new_resumen = resumen[0].map((e)=>{
         if(e.id==id)
-          return {...e,movimientos:respuesta_json};
+          return {...e,transactions:respuesta_json};
         else return e;
       });
       resumen[1](new_resumen);
@@ -249,7 +249,7 @@ export default function main({server_props}){
       el.target.textContent = 'arrow_drop_down';
       let new_resumen = resumen[0].map((e)=>{
         if(e.id==id)
-          return {...e,movimientos:[]};
+          return {...e,transactions:[]};
         else return e;
       });
       resumen[1](new_resumen)
@@ -368,9 +368,9 @@ export default function main({server_props}){
                           <i className="material-icons-outlined icon_movimientos">arrow_drop_down</i>
                         </div>
                       </div>
-                      {e.movimientos.length>0 &&
+                      {e.transactions.length>0 &&
                         <div className="detalle_resumen_tag">
-                          {e.movimientos.map((m,index)=>(
+                          {e.transactions.map((m,index)=>(
                             <div className="contenedor_movimiento">
                               <div className="movimiento" key={index}>
                                 <label>{m.fecha}</label>
