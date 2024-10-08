@@ -219,7 +219,7 @@ export default function main({server_props}){
         out[t.tagKey] = {tagKey: t.tagKey, balance:parseFloat(t.amount), title: t.title, color: t.color, icon: t.icon, transactions: [transaction]}
       }
     });
-    out_f = []
+    let out_f = []
     Object.keys(out).map(ta=>{
       out_f.push(out[ta]);
     })
