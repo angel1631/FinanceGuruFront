@@ -198,7 +198,7 @@ export default function main({server_props}){
     agrupado por día y agrupado por clasificacion */
     console.log("1111111 resumen tags", resumen_clasificacion);
     resumen_clasificacion.map(r=>{
-      total += parseFloat(r.amount);
+      total += parseFloat(r.balance);
     });
     if(set_states){
       resumen[1](resumen_clasificacion);
@@ -217,7 +217,7 @@ export default function main({server_props}){
         out[t.tagKey].balance += parseFloat(t.amount);
         out[t.tagKey].transactions.push(transaction);
       }else{
-        out[t.tagKey] = {tagKey: t.tagKey, balance:parseFloat(t.amount), title: t.title, color: t.color, icon: t.icon, transactions: [transaction]}
+        out[t.tagKey] = {tagKey: t.tagKey, balance:parseFloat(t.amount), title: t.tag, color: t.color, icon: t.icon, transactions: [transaction]}
       }
     });
     let out_f = []
