@@ -196,6 +196,7 @@ export default function main({server_props}){
 
     /* Me quede aqui me traigo todos los movimientos y los debo de agrupar por tag si estoy en la vista de agrupado por tag, tengo que hacer el
     agrupado por día y agrupado por clasificacion */
+    console.log("1111111 resumen tags", resumen_clasificacion);
     resumen_clasificacion.map(r=>{
       total += parseFloat(r.amount);
     });
@@ -208,7 +209,7 @@ export default function main({server_props}){
     
   }
   
-  async function group_tag(transactions) {
+  async function group_tag(transactions = []) {
     let out = {};
     transactions.map(t=>{
       let transaction = {id: t.transactionId, fecha: t.fecha, description: t.description, amount: t.amount};
