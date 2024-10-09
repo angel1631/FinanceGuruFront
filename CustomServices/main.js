@@ -248,7 +248,7 @@ export default function main({server_props}){
         let icon = t.classification_icon;
         if(!title){
           title = 'Grupo no definido';
-          color = '#a7c957';
+          color = '#ef476f';
           icon = 'warning_amber';
         }
         out[classificationKey] = {
