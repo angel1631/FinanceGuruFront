@@ -342,7 +342,7 @@ export default function main({server_props}){
       }else if(view=='group'){
         selected_view[1]('group')
       }
-      get_resumen();
+      get_resumen(undefined,undefined,undefined, view);
     }
     function set_today(){
       let now = new Date();
