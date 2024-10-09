@@ -196,7 +196,7 @@ export default function main({server_props}){
     if(selected_view[0]=='tag'){
       transaction_group = await group_tag(transactions);
     }
-    else if(selected_view=='group'){
+    else if(selected_view[0]=='group'){
       transaction_group = await group_classification(transactions);
     }
     let total = 0;
@@ -361,7 +361,7 @@ export default function main({server_props}){
                   <div className={` ${selected_view[0]=='group'? 'active_view': ''}`} onClick={()=>{set_view('group');}}>
                     Grupos
                   </div> 
-                  <div className={` ${selected_view[0]=='group'? 'active_view': ''}`} onClick={()=>{set_view('date');}}>
+                  <div className={` ${selected_view[0]=='date'? 'active_view': ''}`} onClick={()=>{set_view('date');}}>
                     Dias
                   </div> 
 
