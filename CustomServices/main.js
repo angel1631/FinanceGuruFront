@@ -236,10 +236,12 @@ export default function main({server_props}){
   async function group_classification(transactions=[]){
     let out = {};
     transactions.map(t=>{
+      let classificationKey = t.classificationKey;
+      if(!classificationKey) classificationKey = 'no_definido';
       let transaction = {id: t.transactionId, fecha: t.fecha, description: t.description, amount: t.amount};
-      if(out[t.classificationKey]){
-        out[t.classificationKey].balance += parseFloat(t.amount);
-        out[t.classificationKey].transactions.push(transaction);
+      if(out[classificationKey]){
+        out[classificationKey].balance += parseFloat(t.amount);
+        out[classificationKey].transactions.push(transaction);
       }else{
         let title = t.classification;
         let color = t.classification_color;
@@ -249,8 +251,8 @@ export default function main({server_props}){
           color = '#a7c957';
           icon = 'warning_amber';
         }
-        out[t.classificationKey] = {
-          classificationKey: t.classificationKey, balance: parseFloat(t.amount), title, color, icon, transactions: [transaction]
+        out[classificationKey] = {
+          classificationKey, balance: parseFloat(t.amount), title, color, icon, transactions: [transaction]
         }
       }
     });
