@@ -58,6 +58,7 @@ export default function main({server_props}){
   let show_form_movimientos = useState(false);
   let show_fechas = useState(false);
   let selected_date = useState('current');
+  let selected_view = useState('tag');
   
   let add_move_initial_props = useState({});
   async function preload_add_move_page(){
@@ -191,20 +192,26 @@ export default function main({server_props}){
       //let start = `${now.getFullYear()}-${((now.getMonth())+1)<10?"0"+((now.getMonth())+1):((now.getMonth())+1)}-01`;
     let data = {start,end};
     const transactions = await communication({url:`/api/FinanceGuru/Services/my_transactions`, data});
-    let resumen_clasificacion = await group_tag(transactions);
+    let transaction_group = [];
+    if(selected_view[0]=='tag'){
+      transaction_group = await group_tag(transactions);
+    }
+    else if(selected_view=='group'){
+      transaction_group = await group_classification(transactions);
+    }
     let total = 0;
 
     /* Me quede aqui me traigo todos los movimientos y los debo de agrupar por tag si estoy en la vista de agrupado por tag, tengo que hacer el
     agrupado por día y agrupado por clasificacion */
-    console.log("1111111 resumen tags", resumen_clasificacion);
-    resumen_clasificacion.map(r=>{
+    console.log("1111111 resumen tags", transaction_group);
+    transaction_group.map(r=>{
       total += parseFloat(r.balance);
     });
     if(set_states){
-      resumen[1](resumen_clasificacion);
+      resumen[1](transaction_group);
       total_resumen[1](total);
     }else{
-      return {resumen: resumen_clasificacion, total_resumen:total}
+      return {resumen: transaction_group, total_resumen:total}
     }
     
   }
@@ -226,7 +233,25 @@ export default function main({server_props}){
     })
     return out_f;
   }
-
+  async function group_classification(transactions=[]){
+    let out = {};
+    transactions.map(t=>{
+      let transaction = {id: t.transactionId, fecha: t.fecha, description: t.description, amount: t.amount};
+      if(out[t.classificationKey]){
+        out[t.classificationKey].balance += parseFloat(t.amount);
+        out[t.classificationKey].transactions.push(transaction);
+      }else{
+        out[t.classificationKey] = {
+          classificationKey: t.classificationKey, balance: parseFloat(t.amount), title: t.classification, color: t.classification_color, icon: t.classification_icon, transactions: [transaction]
+        }
+      }
+    });
+    let out_f = [];
+    Object.keys(out).map(cl => {
+      out_f.push(out[cl])
+    })
+    return out_f;
+  }
   async function cargar_movimientos(id,el){
     if(el.target.textContent.indexOf('down')>=0){
       let url = '/api/FinanceGuru/Services/buscar_movimientos';
@@ -299,6 +324,15 @@ export default function main({server_props}){
       end: end_date.getFullYear()+"-"+(("0" + (end_date.getMonth() + 1)).slice(-2))+"-"+(("0" + end_date.getDate()).slice(-2)) });
       get_resumen(start_date.getFullYear()+"-"+(("0" + (start_date.getMonth() + 1)).slice(-2))+"-"+(("0" + start_date.getDate()).slice(-2)), end_date.getFullYear()+"-"+(("0" + (end_date.getMonth() + 1)).slice(-2))+"-"+(("0" + end_date.getDate()).slice(-2)));
     }
+
+    function set_view(view){
+      if(view=='tag'){
+        selected_view[1]('tag');
+      }else if(view=='group'){
+        selected_view[1]('group')
+      }
+      get_resumen();
+    }
     function set_today(){
       let now = new Date();
       let today_date = now.getFullYear()+"-"+(("0" + (now.getMonth() + 1)).slice(-2))+"-"+(("0" + now.getDate()).slice(-2)); 
@@ -319,6 +353,19 @@ export default function main({server_props}){
             }
             <GCard>
                 <div className="button_add_move_container">
+                <div className="view_menu" id="view_menu">
+                  <div className={` ${selected_view[0]=='tag'? 'active_view': ''}`} onClick={()=>{set_view('tag');}}>
+                    Etiquetas
+                  </div> 
+
+                  <div className={` ${selected_view[0]=='group'? 'active_view': ''}`} onClick={()=>{set_view('group');}}>
+                    Grupos
+                  </div> 
+                  <div className={` ${selected_view[0]=='group'? 'active_view': ''}`} onClick={()=>{set_view('date');}}>
+                    Dias
+                  </div> 
+
+                </div>
                 <div id="add_move_button" className="move_add_button active_pulse" onClick={(e)=>{show_form_movimientos[1](true)}}>
                     Agregar un gasto
                 </div>
