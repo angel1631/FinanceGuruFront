@@ -176,7 +176,8 @@ export default function main({server_props}){
   function tourNextStep(){
     window.tour.nextStep();
   }
-  async function get_resumen(start='',end='', set_states = true){
+  async function get_resumen(start='',end='', set_states = true, view){
+    if(!view) view = selected_view[0];
     if(start && end){
       start = new Date(start).toISOString();
       end = new Date(end).toISOString();
@@ -193,10 +194,10 @@ export default function main({server_props}){
     let data = {start,end};
     const transactions = await communication({url:`/api/FinanceGuru/Services/my_transactions`, data});
     let transaction_group = [];
-    if(selected_view[0]=='tag'){
+    if(view=='tag'){
       transaction_group = await group_tag(transactions);
     }
-    else if(selected_view[0]=='group'){
+    else if(view=='group'){
       transaction_group = await group_classification(transactions);
     }
     let total = 0;
