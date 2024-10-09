@@ -241,8 +241,16 @@ export default function main({server_props}){
         out[t.classificationKey].balance += parseFloat(t.amount);
         out[t.classificationKey].transactions.push(transaction);
       }else{
+        let title = t.classification;
+        let color = t.classification_color;
+        let icon = t.classification_icon;
+        if(!title){
+          title = 'Grupo no definido';
+          color = '#a7c957';
+          icon = 'warning_amber';
+        }
         out[t.classificationKey] = {
-          classificationKey: t.classificationKey, balance: parseFloat(t.amount), title: t.classification, color: t.classification_color, icon: t.classification_icon, transactions: [transaction]
+          classificationKey: t.classificationKey, balance: parseFloat(t.amount), title, color, icon, transactions: [transaction]
         }
       }
     });
