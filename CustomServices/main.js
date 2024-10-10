@@ -61,6 +61,7 @@ export default function main({server_props}){
   let selected_view = useState('tag');
   const months = ['Jan', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dec']; 
   let add_move_initial_props = useState({});
+  let grafic_type = useState('pie');
   async function preload_add_move_page(){
     try{
       let [accounts, classifications, tags, account_scheme, classification_scheme, tag_scheme, resumen] = await Promise.all([
@@ -96,44 +97,64 @@ export default function main({server_props}){
     let div_grafica_resumen = document.getElementById('grafica_resumen');
     if(div_grafica_resumen){
       let grafica_div =  echarts.init(div_grafica_resumen);
-      var options = {
-        tooltip: {
-          trigger: 'item'
-        },
-        legend: {
-          top: '5%',
-          left: 'center'
-        },
-        series: [
-          {
-            name: 'Gastos',
-            type: 'pie',
-            radius: ['40%', '70%'],
-            avoidLabelOverlap: false,
-            itemStyle: {
-              borderRadius: 10,
-              borderColor: '#fff',
-              borderWidth: 2
-            },
-            colorBy:'data',
-            label: {
-              show: false,
-              position: 'center'
-            },
-            emphasis: {
+      if(grafic_type[0]=='pie'){
+        var options = {
+          tooltip: {
+            trigger: 'item'
+          },
+          legend: {
+            top: '5%',
+            left: 'center'
+          },
+          series: [
+            {
+              name: 'Gastos',
+              type: 'pie',
+              radius: ['40%', '70%'],
+              avoidLabelOverlap: false,
+              itemStyle: {
+                borderRadius: 10,
+                borderColor: '#fff',
+                borderWidth: 2
+              },
+              colorBy:'data',
               label: {
-                show: true,
-                fontSize: 30,
-                fontWeight: 'bold'
-              }
-            },
-            labelLine: {
-              show: false
-            },
-            data: resumen[0].map(r=>({value:r.balance,name:r.title,itemStyle:{color:r.color}})) 
-          }
-        ]
-      };
+                show: false,
+                position: 'center'
+              },
+              emphasis: {
+                label: {
+                  show: true,
+                  fontSize: 30,
+                  fontWeight: 'bold'
+                }
+              },
+              labelLine: {
+                show: false
+              },
+              data: resumen[0].map(r=>({value:r.balance,name:r.title,itemStyle:{color:r.color}})) 
+            }
+          ]
+        };
+      }else if(grafic_type[0]=='line'){
+        var options = {
+          xAxis: {
+              type: 'category',
+              data: resumen[0].map(r=>(r.title))
+          },
+              yAxis: {
+              type: 'value'
+          },
+          series: [
+            {
+              data: resumen[0].map(r=>r.balance),
+              type: 'line',
+              smooth: true
+            }
+          ]
+        };
+      }
+      
       grafica_div.setOption(options);
     }
     
@@ -201,6 +222,7 @@ export default function main({server_props}){
       transaction_group = await group_classification(transactions);
     }else if(view=='date'){
       transaction_group = await group_date(transactions);
+      grafic_type[1]('line')
     }
     let total = 0;
 
