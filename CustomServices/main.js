@@ -95,10 +95,12 @@ export default function main({server_props}){
   
   function grafica(){
     let div_grafica_resumen = document.getElementById('grafica_resumen');
+    div_grafica_resumen.innerHTML = '';
     if(div_grafica_resumen){
       let grafica_div =  echarts.init(div_grafica_resumen);
+      let options = {};
       if(grafic_type[0]=='pie'){
-        var options = {
+        options = {
           tooltip: {
             trigger: 'item'
           },
@@ -137,7 +139,7 @@ export default function main({server_props}){
           ]
         };
       }else if(grafic_type[0]=='line'){
-        var options = {
+        options = {
           xAxis: {
               type: 'category',
               data: resumen[0].map(r=>(r.title))
