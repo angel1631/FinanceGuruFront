@@ -59,7 +59,7 @@ export default function main({server_props}){
   let show_fechas = useState(false);
   let selected_date = useState('current');
   let selected_view = useState('tag');
-  
+  const months = ['Jan', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dec']; 
   let add_move_initial_props = useState({});
   async function preload_add_move_page(){
     try{
@@ -199,6 +199,8 @@ export default function main({server_props}){
     }
     else if(view=='group'){
       transaction_group = await group_classification(transactions);
+    }else if(view=='date'){
+      transaction_group = await group_date(transactions);
     }
     let total = 0;
 
@@ -260,6 +262,30 @@ export default function main({server_props}){
     let out_f = [];
     Object.keys(out).map(cl => {
       out_f.push(out[cl])
+    })
+    return out_f;
+  }
+  async function group_date(transactions=[]) {
+    let out = {};
+    transactions.map(t=>{
+      //let fecha = t.fecha;
+      let fecha = (months[parseInt((t.fecha).substring(5,7))-1]+t.fecha.substring(7,10))
+      let transaction = {id: t.transactionId, fecha: t.fecha, description: t.description, amount: t.amount};
+      if(out[fecha]){
+        out[fecha].balance += parseFloat(t.amount);
+        out[fecha].transactions.push(transaction);
+      }else{
+        let title = fecha;
+        let color = '#ef476f';
+        let icon = 'warning_amber';
+        out[fecha] = {
+          key:fecha, balance: parseFloat(t.amount), title, color, icon, transactions: [transaction]
+        }
+      }
+    });
+    let out_f = [];
+    Object.keys(out).map(fc => {
+      out_f.push(out[fc])
     })
     return out_f;
   }
