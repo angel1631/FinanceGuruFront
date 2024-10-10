@@ -217,9 +217,10 @@ export default function main({server_props}){
     let transaction_group = [];
     if(view=='tag'){
       transaction_group = await group_tag(transactions);
-    }
-    else if(view=='group'){
+      grafic_type[1]('pie')
+    }else if(view=='group'){
       transaction_group = await group_classification(transactions);
+      grafic_type[1]('pie')
     }else if(view=='date'){
       transaction_group = await group_date(transactions);
       grafic_type[1]('line')
