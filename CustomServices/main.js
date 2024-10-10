@@ -95,7 +95,7 @@ export default function main({server_props}){
   
   function grafica(){
     let div_grafica_resumen = document.getElementById('grafica_resumen');
-    div_grafica_resumen.innerHTML = '';
+    //div_grafica_resumen.innerHTML = '';
     if(div_grafica_resumen){
       let grafica_div =  echarts.init(div_grafica_resumen);
       let options = {};
