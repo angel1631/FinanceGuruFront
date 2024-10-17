@@ -88,7 +88,7 @@ export default function main({server_props}){
       },
       {
         content: <h2> Aqui podras ver la grafica de los gastos realizados en el mes</h2>,
-        placement: 'bottom', 
+        placement: 'left', 
         target: "#grafica_resumen",
       },
       {
