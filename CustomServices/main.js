@@ -52,59 +52,50 @@ export default function main({server_props}){
     steps: [
       {
         content: <h2> Hola! Bienvenido a Finance Guru</h2>,
-        locale: {skip: <strong>OMITIR</strong>},
+        locale: {skip: <strong aria-lebel="skip">OMITIR</strong>},
         placement: 'center', 
         target: "body"
       },
       {
         content: <h2> Reportemos nuestro primer gasto</h2>,
-        placement: 'bottom', 
+        placement: 'left', 
         target: "#add_move_button",
-        title: 'Reportar gasto'
       },
       {
         content: <h2> Selecciona que gasto quieres reportar</h2>,
         placement: 'bottom', 
-        target: "#tags_container",
-        title: 'Seleccionando clasificación'
+        target: "#tags_container"
       },
       {
-        title: 'Monto',
         content: <h2> Cuanto dinero gastaste</h2>,
         placement: 'bottom', 
         target: "#amount",
       },
       {
-        title: 'Fecha',
         content: <h2> En que fecha lo realizaste</h2>,
         placement: 'bottom', 
         target: "#fecha",
       },
       {
-        title: 'Descripcion',
         content: <h2> Puedes detallar el gasto por ejemplo: Compre chocolates y pan</h2>,
         placement: 'bottom', 
         target: "#description",
       },
       {
-        title: 'Guardar',
         content: <h2> Ahora guardaremos el gasto</h2>,
         placement: 'bottom', 
         target: "#save_move",
       },
       {
-        title: 'Grafica del resumen',
         content: <h2> Aqui podras ver la grafica de los gastos realizados en el mes</h2>,
         placement: 'bottom', 
         target: "#grafica_resumen",
       },
       {
-        title: 'Detalle de gastos',
         content: <h2> Aqui podras ver cada uno de los gastos reportados y su detalle</h2>,
         placement: 'bottom', 
         target: "#resumen_gastos",
       },
-
     ]
   }); 
   let resumen = useState([]);
@@ -481,6 +472,11 @@ export default function main({server_props}){
               scrollToFirstStep
               showSkipButton
               showProgress
+              styles={{
+                options: {
+                  zIndex: 1101,
+                },
+              }}
             />
             {show_form_movimientos[0] && 
               <GModal show={show_form_movimientos} title={`Agregar Movimientos`} onClouse={onClouseAddMovimiento}>
