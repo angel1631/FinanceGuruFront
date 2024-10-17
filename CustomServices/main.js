@@ -10,8 +10,6 @@ import { useRouter } from 'next/router';
 import { errorAlert, successAlert } from "../../Core/scripts/alerts";
 import {useCommunication} from "../../Core/hooks/useCommunication";
 import SimpleTour from "../../Core/scripts/tour";
-
-import {useState} from "react"
 import joyride, {Callbackprops, STATUS, Step} from "react-joyride"
 import Joyride from "react-joyride";
 
