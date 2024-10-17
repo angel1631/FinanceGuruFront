@@ -11,6 +11,10 @@ import { errorAlert, successAlert } from "../../Core/scripts/alerts";
 import {useCommunication} from "../../Core/hooks/useCommunication";
 import SimpleTour from "../../Core/scripts/tour";
 
+import {useState} from "react"
+import joyride, {Callbackprops, STATUS, Step} from "react-joyride"
+import Joyride from "react-joyride";
+
 export async function server_props(context){
     try{
         let session_token = cookie_in_cookies_string({name: 'session_token',cookies_string: context.req.headers.cookie});
@@ -45,7 +49,66 @@ export default function main({server_props}){
   let total_resumen = useState(server_props.total_resumen);
   */
 
+  const tour_state = useState({
+    run: true,
+    steps: [
+      {
+        content: <h2> Hola! Bienvenido a Finance Guru</h2>,
+        locale: {skip: <strong>OMITIR</strong>},
+        placement: 'center', 
+        target: "body"
+      },
+      {
+        content: <h2> Reportemos nuestro primer gasto</h2>,
+        placement: 'bottom', 
+        target: "#add_move_button",
+        title: 'Reportar gasto'
+      },
+      {
+        content: <h2> Selecciona que gasto quieres reportar</h2>,
+        placement: 'bottom', 
+        target: "#tags_container",
+        title: 'Seleccionando clasificación'
+      },
+      {
+        title: 'Monto',
+        content: <h2> Cuanto dinero gastaste</h2>,
+        placement: 'bottom', 
+        target: "#amount",
+      },
+      {
+        title: 'Fecha',
+        content: <h2> En que fecha lo realizaste</h2>,
+        placement: 'bottom', 
+        target: "#fecha",
+      },
+      {
+        title: 'Descripcion',
+        content: <h2> Puedes detallar el gasto por ejemplo: Compre chocolates y pan</h2>,
+        placement: 'bottom', 
+        target: "#description",
+      },
+      {
+        title: 'Guardar',
+        content: <h2> Ahora guardaremos el gasto</h2>,
+        placement: 'bottom', 
+        target: "#save_move",
+      },
+      {
+        title: 'Grafica del resumen',
+        content: <h2> Aqui podras ver la grafica de los gastos realizados en el mes</h2>,
+        placement: 'bottom', 
+        target: "#grafica_resumen",
+      },
+      {
+        title: 'Detalle de gastos',
+        content: <h2> Aqui podras ver cada uno de los gastos reportados y su detalle</h2>,
+        placement: 'bottom', 
+        target: "#resumen_gastos",
+      },
 
+    ]
+  }); 
   let resumen = useState([]);
   let loading = useState(true);
   let is_ready = useState(false);
@@ -409,6 +472,17 @@ export default function main({server_props}){
             <div className="container_loading">...loading</div>
           :
             <>
+            <Joyride
+              callback={()=>{
+                
+              }}
+              run={tour_state[0].run}
+              steps={tour_state[0].steps}
+              hideCloseButton
+              scrollToFirstStep
+              showSkipButton
+              showProgress
+            />
             {show_form_movimientos[0] && 
               <GModal show={show_form_movimientos} title={`Agregar Movimientos`} onClouse={onClouseAddMovimiento}>
                   <AddMovimiento after_save={after_save_movimiento} initial_props={add_move_initial_props}/>
