@@ -471,6 +471,7 @@ export default function main({server_props}){
           :
             <>
             <Joyride
+              continuous
               callback={()=>{
                 
               }}
