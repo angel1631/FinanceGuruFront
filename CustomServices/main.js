@@ -462,7 +462,7 @@ export default function main({server_props}){
           :
             <>
             <Joyride
-              continuous
+              
               callback={()=>{
                 
               }}
@@ -470,6 +470,7 @@ export default function main({server_props}){
               steps={tour_state[0].steps}
               hideCloseButton
               scrollToFirstStep
+              continuous={true}
               disableOverlay={true}
               showSkipButton
               showProgress
