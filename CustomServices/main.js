@@ -470,6 +470,7 @@ export default function main({server_props}){
               steps={tour_state[0].steps}
               hideCloseButton
               scrollToFirstStep
+              disableOverlay={true}
               showSkipButton
               showProgress
               styles={{
