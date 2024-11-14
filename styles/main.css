@@ -64,6 +64,7 @@
 .contenedor_movimiento .movimiento{
     display: flex;
     flex-direction: column;
+    color: var(--old-primary-color)
 }
 .contenedor_movimiento .btn_delete_move{
     margin-left: auto;
